@@ -1,0 +1,38 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://w.tracxn.com/api-developers-page ; live probe of
+  https://platform.tracxn.com/api/2.2/companies (403 without token) ;
+  https://www.postman.com/tracxnapi/tracxn-api (official Postman workspace) ;
+  public client implementations of the documented v2.2 contract
+docs: https://platform.tracxn.com/a/api/gettingstarted/apibasics
+description: >-
+  Authentication profile for the Tracxn API v2.2. Tracxn does not publish a
+  public OpenAPI; the reference documentation sits behind the platform login.
+  The API authenticates every request with an account-scoped access token
+  passed in a lowercase `accesstoken` HTTP header. Tokens are issued from the
+  Tracxn platform under Data Solutions > API & Developer Tools (separate
+  Playground and production tokens). Requests without a token are rejected
+  with a JSON error envelope (errorCode 403000000, "Invalid web session
+  access. No user." observed live on 2026-07-21). No OAuth 2.0, OpenID
+  Connect, or scope surface is documented.
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - header
+  oauth2_flows: []
+schemes:
+- name: accesstoken
+  type: apiKey
+  in: header
+  parameter: accesstoken
+  issuance: Tracxn platform > Data Solutions > API & Developer Tools > API Token
+  environments:
+  - production: https://platform.tracxn.com/api/2.2
+  - playground: https://platform.tracxn.com/api/2.2/playground
+unauthenticated_response:
+  status: 403
+  body:
+    errorCode: 403000000
+    message: Invalid web session access. No user.

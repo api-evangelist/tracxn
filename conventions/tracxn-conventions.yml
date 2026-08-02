@@ -1,0 +1,56 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://w.tracxn.com/api-developers-page ; official Postman workspace
+  https://www.postman.com/tracxnapi/tracxn-api ; live probes of
+  https://platform.tracxn.com/api/2.2 (405 on GET, 403 JSON envelope on
+  unauthenticated POST, 2026-07-21) ; public v2.2 client implementations
+description: >-
+  Cross-cutting request/response semantics of the Tracxn API v2.2. Tracxn
+  publishes no public OpenAPI; these conventions are captured from the public
+  developer page, the official Postman workspace and live probes. The API is
+  query-by-POST: every endpoint (companies, investors, transactions,
+  acquisitiontransactions) accepts a JSON body carrying filter criteria
+  (e.g. feedName) and result-size controls, and GET is rejected with 405.
+base_url: https://platform.tracxn.com/api/2.2
+api_style: JSON-over-HTTPS, POST query endpoints with filter bodies
+authentication:
+  scheme: apiKey in lowercase `accesstoken` header
+  detail: authentication/tracxn-authentication.yml
+request_model:
+  method: POST
+  content_type: application/json
+  body:
+    filter: 'criteria object (e.g. {"feedName": ["Cybersecurity"]})'
+    size: number of results to return (max 20 per request in Playground)
+versioning:
+  scheme: uri-path
+  current: '2.2'
+  example: /api/2.2/companies
+  detail: lifecycle/tracxn-lifecycle.yml
+environments:
+  production: https://platform.tracxn.com/api/2.2
+  playground: https://platform.tracxn.com/api/2.2/playground
+  detail: sandbox/tracxn-sandbox.yml
+error_envelope:
+  shape:
+    errorCode: numeric (e.g. 403000000)
+    message: human-readable string
+  format: custom JSON (not RFC 9457 problem+json)
+  detail: errors/tracxn-problem-types.yml
+rate_limiting:
+  signal: HTTP 429 on exceeded quota
+  playground_caps: 100/hour, 1000/day (see sandbox/tracxn-sandbox.yml)
+idempotency:
+  supported: false
+  note: >-
+    No idempotency-key header or contract is documented; the query endpoints
+    are read-only lookups, so replay safety is inherent to the surface.
+pagination:
+  style: size-bounded result window
+  params:
+  - size
+  note: >-
+    Public client code passes `size` (and windows results in batches of up to
+    20); the full pagination contract (offset/from cursors) is documented
+    behind the platform login and is not restated here.

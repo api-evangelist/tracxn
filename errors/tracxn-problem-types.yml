@@ -1,0 +1,35 @@
+generated: '2026-07-21'
+method: probed
+source: >-
+  live probes of https://platform.tracxn.com/api/2.2/companies and
+  https://tracxn.com/api/2.2/companies (2026-07-21) ; error handling in
+  public v2.2 clients (429 rate-limit handling)
+format: custom
+description: >-
+  Error surface of the Tracxn API v2.2 as observed live and handled by public
+  clients. Tracxn publishes no public error-code registry; errors are
+  returned as a custom JSON envelope with a long numeric errorCode and a
+  message string (not RFC 9457 application/problem+json). The numeric codes
+  appear to extend the HTTP status (e.g. 403000000 for an authentication
+  failure). The authoritative registry, if any, sits behind the platform
+  login.
+envelope:
+  errorCode: numeric error code (e.g. 403000000)
+  message: human-readable description
+problems:
+- status: 403
+  errorCode: 403000000
+  message: Invalid web session access. No user.
+  cause: Request without a valid `accesstoken` header
+  remediation: Send a valid access token in the lowercase `accesstoken` header
+  observed: live probe 2026-07-21
+- status: 405
+  title: Method Not Allowed
+  cause: GET request to a query endpoint; the v2.2 API is POST-only
+  remediation: Use POST with a JSON filter body
+  observed: live probe 2026-07-21
+- status: 429
+  title: Rate limit exceeded
+  cause: Playground/production request quota exceeded
+  remediation: Back off and retry after the quota window; see sandbox/tracxn-sandbox.yml
+  observed: handled explicitly by public API clients

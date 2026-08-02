@@ -1,0 +1,50 @@
+generated: '2026-07-21'
+method: derived
+source: >-
+  derived from the Tracxn API v2.2 endpoint surface
+  (companies/investors/transactions/acquisitiontransactions) and the data
+  categories published for the official Tracxn MCP
+  (https://w.tracxn.com/tracxn-mcp)
+description: >-
+  Entity graph of the Tracxn private-market dataset as exposed by the API
+  v2.2 endpoints and the MCP data categories. Tracxn publishes no public
+  schema reference; entities and relationships below are derived from the
+  endpoint surface and the platform's published data categories (companies,
+  funding rounds, investors, acquisitions & IPOs, sectors & trends,
+  financials & legal data), not from a machine-readable spec.
+entities:
+- name: Company
+  endpoint: /companies
+  description: Startup / private company profile, the core entity
+- name: Investor
+  endpoint: /investors
+  description: VC, PE, or angel investor profile with portfolio
+- name: Transaction
+  endpoint: /transactions
+  description: Funding round linking investors to a company
+- name: AcquisitionTransaction
+  endpoint: /acquisitiontransactions
+  description: M&A / exit event for a company
+- name: Feed
+  description: Sector / industry feed (3,000+) used as the primary filter taxonomy
+relationships:
+- from: Company
+  to: Transaction
+  kind: has_many
+  via: funding rounds raised by the company
+- from: Transaction
+  to: Investor
+  kind: has_many
+  via: participating investors in a round
+- from: Investor
+  to: Company
+  kind: has_many
+  via: portfolio companies
+- from: Company
+  to: AcquisitionTransaction
+  kind: has_many
+  via: acquisition / exit events involving the company
+- from: Company
+  to: Feed
+  kind: belongs_to
+  via: feedName classification (e.g. Cybersecurity)

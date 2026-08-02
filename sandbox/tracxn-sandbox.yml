@@ -1,0 +1,39 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://www.postman.com/tracxnapi/tracxn-api/folder/jlyqobh/api-version-2-2-playground
+  (official Postman workspace, "API Version 2.2 Playground" folder) ;
+  https://w.tracxn.com/api-developers-page ; playground caps as recorded by
+  public API clients (e.g. github.com/HXMAN76/Lumen-VC tracxn_client.py) —
+  authoritative numbers live behind the platform login
+description: >-
+  Tracxn ships a dedicated Playground environment for evaluating the API
+  without a production data license. The Playground mirrors the v2.2 endpoint
+  surface under a /playground path prefix, uses its own access token (issued
+  in the platform under Data Solutions > API & Developer Tools > Playground >
+  API Token), and is scoped to a single feed (Cybersecurity) for testing.
+  Documented request caps for the Playground are 100 requests/hour and 1,000
+  requests/day, with up to 20 results per request; exceeding them returns
+  HTTP 429. No magic test entities beyond the restricted feed are published.
+environments:
+  production:
+    base_url: https://platform.tracxn.com/api/2.2
+    token: production access token (accesstoken header)
+  playground:
+    base_url: https://platform.tracxn.com/api/2.2/playground
+    token: playground access token (accesstoken header)
+    scope: Cybersecurity feed only
+    rate_limits:
+      per_hour: 100
+      per_day: 1000
+      max_results_per_request: 20
+endpoints:
+- /companies
+- /investors
+- /transactions
+- /acquisitiontransactions
+notes:
+- The Playground and production environments use the same request/response
+  contract; only the path prefix, token, feed scope and rate caps differ.
+- Rate-limit and endpoint details are documented in Tracxn's official Postman
+  workspace; the in-platform API docs sit behind the login.

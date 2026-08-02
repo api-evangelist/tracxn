@@ -1,0 +1,33 @@
+generated: '2026-07-21'
+method: derived
+source: >-
+  derived from authentication/tracxn-authentication.yml,
+  conventions/tracxn-conventions.yml and live probes of
+  https://platform.tracxn.com/api/2.2 (2026-07-21)
+description: >-
+  Cross-cutting standards posture of the Tracxn API v2.2, derived from the
+  captured auth/conventions artifacts and live probes. Tracxn publishes no
+  public OpenAPI, so assertions are limited to what the observed contract
+  demonstrates.
+standards:
+- id: oauth2
+  conforms: false
+  evidence: API-key style `accesstoken` header only; no OAuth 2.0 flows documented
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on tracxn.com and platform.tracxn.com (probed 2026-07-21)
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: errors use a custom {errorCode, message} JSON envelope, not application/problem+json
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on tracxn.com and platform.tracxn.com (probed 2026-07-21)
+- id: json-api
+  conforms: false
+  evidence: query-by-POST filter contract with custom JSON shapes, not JSON:API media type
+- id: pagination
+  conforms: true
+  evidence: size-bounded result windows on query endpoints (see conventions/tracxn-conventions.yml)
+- id: idempotency
+  conforms: false
+  evidence: no idempotency-key contract documented; surface is read-only queries

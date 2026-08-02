@@ -1,27 +1,137 @@
 aid: tracxn
 name: Tracxn
-description: 'Tracxn is a company surfaced as a portfolio company of accel and added to the API Evangelist
-  network as a stub for enrichment. Sector: cloud-saas. This profile is a lead awaiting the enrichment
-  pipeline.'
+description: >-
+  Tracxn is a market intelligence platform for private company data, tracking
+  7.7M+ companies worldwide across 2,000+ sectors, 3K+ feeds and 55K+
+  taxonomies for venture capital funds, private equity, investment banks,
+  corporate M&A and innovation teams. Alongside the platform it sells Data
+  Solutions for programmatic access: the Tracxn API (JSON over HTTPS at
+  platform.tracxn.com/api/2.2 with companies, investors, funding transactions
+  and acquisition endpoints, plus a rate-limited Playground sandbox), an
+  official Tracxn MCP server for AI assistants such as Claude, ChatGPT and
+  Cursor, scheduled SFTP dumps, and Snowflake and BigQuery data-share
+  integrations. Founded in Bengaluru by Neha Singh and Abhishek Goyal and
+  backed by Accel, Tracxn is listed on the Indian stock exchanges (NSE:
+  TRACXN).
 url: https://raw.githubusercontent.com/api-evangelist/tracxn/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - accel
-x-tier: stub
+x-tier: enriched
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
+image: https://avatars.githubusercontent.com/u/12694738?v=4
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
 tags:
 - Company
 - Cloud Saas
-apis: []
+- Market Intelligence
+- Private Markets
+- Venture Capital
+- Startups
+- Company Data
+- Investors
+- Funding
+apis:
+- name: Tracxn API
+  description: >-
+    Programmatic access to Tracxn's private-market database (API version 2.2).
+    JSON-over-HTTPS POST endpoints for companies, investors, funding
+    transactions and acquisition transactions, filtered by feed/taxonomy
+    queries in the request body. Authenticates with an account access token
+    sent in the lowercase `accesstoken` header; tokens are issued in the
+    platform under Data Solutions > API & Developer Tools. A Playground
+    environment (/api/2.2/playground) offers a rate-limited sandbox scoped to
+    the Cybersecurity feed for evaluation. Full documentation sits behind the
+    platform login; an official public Postman workspace documents the
+    collection.
+  humanURL: https://w.tracxn.com/api-developers-page
+  baseURL: https://platform.tracxn.com/api/2.2
+  tags:
+  - Companies
+  - Investors
+  - Funding Rounds
+  - Acquisitions
+  - Market Intelligence
+  properties:
+  - type: Documentation
+    url: https://platform.tracxn.com/a/api/gettingstarted/apibasics
+  - type: Postman
+    url: https://www.postman.com/tracxnapi/tracxn-api/overview
+  - type: Sandbox
+    url: sandbox/tracxn-sandbox.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/tracxn-domain-security.yml
 - type: Website
-  url: http://www.traxcn.com
+  url: https://tracxn.com
+- type: DeveloperPortal
+  url: https://w.tracxn.com/api-developers-page
+- type: Documentation
+  url: https://platform.tracxn.com/a/api/gettingstarted/apibasics
+- type: GettingStarted
+  url: https://platform.tracxn.com/a/api/gettingstarted/apibasics
+- type: Pricing
+  url: https://tracxn.com/pricing
+- type: SignUp
+  url: https://tracxn.com/signup
+- type: Login
+  url: https://tracxn.com/login
+- type: TermsOfService
+  url: https://tracxn.com/termsofuse
+- type: PrivacyPolicy
+  url: https://tracxn.com/privacypolicy
+- type: Support
+  url: https://help.tracxn.com/en/
+- type: ContactUs
+  url: https://tracxn.com/contactus
+- type: FAQ
+  url: https://w.tracxn.com/faqs
+- type: Blog
+  url: https://tracxn.com/p/media
+- type: GitHubOrganization
+  url: https://github.com/tracxn
+- type: Postman
+  url: https://www.postman.com/tracxnapi/tracxn-api/overview
+- type: MCPServer
+  url: mcp/tracxn-mcp.yml
+- type: LLMsTxt
+  url: llms/tracxn-llms.txt
+- type: Authentication
+  url: authentication/tracxn-authentication.yml
+- type: Sandbox
+  url: sandbox/tracxn-sandbox.yml
+- type: Conventions
+  url: conventions/tracxn-conventions.yml
+- type: ErrorCatalog
+  url: errors/tracxn-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/tracxn-lifecycle.yml
+- type: Conformance
+  url: conformance/tracxn-conformance.yml
+- type: DataModel
+  url: data-model/tracxn-data-model.yml
+x-enrichment:
+  date: '2026-07-21'
+  status: enriched
+  artifacts_added: 10
+  pass: local-v1

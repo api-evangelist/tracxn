@@ -1,0 +1,53 @@
+generated: '2026-07-21'
+method: searched
+status: published
+source: https://w.tracxn.com/tracxn-mcp
+description: >-
+  Tracxn publishes an official MCP (Model Context Protocol) connector that
+  links its private-market database to AI assistants — positioned as "the
+  connector that links Tracxn's data to AI tools like Claude." It is enabled
+  from the Tracxn platform's AI-integrations portal and requires an active
+  Tracxn subscription with MCP access; supported clients include Claude,
+  ChatGPT, Gemini, Cursor and other MCP-compatible environments. The public
+  page documents data categories exposed conversationally rather than a
+  formal tool list; the connect flow lives behind the platform login. A
+  separate community stdio server (vatsal191201/tracxn-mcp on GitHub) wraps
+  the Tracxn REST API v2.2 with a user's own access token and predates the
+  official connector.
+server:
+  name: Tracxn MCP
+  official: true
+  transport: http
+  connect: https://platform.tracxn.com/a/integrations#a:ai-integrations
+  auth:
+    scheme: Tracxn subscription with MCP access enabled
+    support: apidesk@tracxn.com
+  clients:
+  - Claude
+  - ChatGPT
+  - Gemini
+  - Cursor
+data_categories:
+- name: Companies
+  description: Startup and private company profiles
+- name: Funding Rounds
+  description: Investment tracking across stages
+- name: Investors
+  description: VC, PE, and angel portfolio analysis
+- name: Acquisitions & IPOs
+  description: M&A and exit monitoring
+- name: Sectors & Trends
+  description: 3,000+ industry feeds
+- name: Financials & Legal Data
+  description: Cap tables and entity information
+community_servers:
+- name: tracxn-mcp
+  official: false
+  transport: stdio
+  source: https://github.com/vatsal191201/tracxn-mcp
+  auth:
+    env: TRACXN_ACCESS_TOKEN
+  note: >-
+    Community Python MCP server wrapping the Tracxn REST API v2.2
+    (companies/investors/transactions/acquisitions), defaulting to the
+    Playground environment.

@@ -1,0 +1,29 @@
+generated: '2026-07-21'
+method: searched
+source: >-
+  https://w.tracxn.com/api-developers-page ; official Postman workspace
+  https://www.postman.com/tracxnapi/tracxn-api (API Version 2.2) ;
+  https://tracxn.com/termsofuse
+description: >-
+  Lifecycle posture of the Tracxn API. The API is versioned in the URI path
+  (current major.minor 2.2, with the official Postman workspace organized
+  around "API Version 2.2"); earlier versions are not publicly documented.
+  Tracxn publishes no public deprecation policy, no RFC 8594
+  Sunset/Deprecation header contract, no public SLA and no public status
+  page at this pass — absence recorded as honest data. API support runs
+  through apidesk@tracxn.com.
+versioning:
+  api:
+    scheme: uri-path
+    current: '2.2'
+    example: https://platform.tracxn.com/api/2.2/companies
+deprecation:
+  policy_url: null
+  sunset_header: unknown
+  note: No public deprecation policy or Sunset/Deprecation header support documented.
+sla:
+  url: null
+  uptime_target: null
+status_page: null
+support: apidesk@tracxn.com
+terms: https://tracxn.com/termsofuse
