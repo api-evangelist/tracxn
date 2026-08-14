@@ -35,7 +35,7 @@ accessModel:
 specificationVersion: '0.20'
 image: https://avatars.githubusercontent.com/u/12694738?v=4
 created: '2026-07-17'
-modified: '2026-07-21'
+modified: '2026-08-14'
 tags:
 - Company
 - Cloud Saas
@@ -49,31 +49,72 @@ tags:
 apis:
 - name: Tracxn API
   description: >-
-    Programmatic access to Tracxn's private-market database (API version 2.2).
-    JSON-over-HTTPS POST endpoints for companies, investors, funding
-    transactions and acquisition transactions, filtered by feed/taxonomy
-    queries in the request body. Authenticates with an account access token
-    sent in the lowercase `accesstoken` header; tokens are issued in the
-    platform under Data Solutions > API & Developer Tools. A Playground
-    environment (/api/2.2/playground) offers a rate-limited sandbox scoped to
-    the Cybersecurity feed for evaluation. Full documentation sits behind the
-    platform login; an official public Postman workspace documents the
-    collection.
+    Programmatic access to Tracxn's private-market database. Version 3.0 is
+    current and version 2.2 is formally announced for deprecation. A uniform
+    JSON-over-HTTPS contract: every data endpoint is a POST taking the same
+    four-key body (filter, sort, from, size) with no path or query parameters,
+    across companies, funding rounds, acquisitions, IPOs, investors, the
+    two-level sector taxonomy (practice areas and feeds), eleven financial and
+    employee time-series metrics, and four aggregation endpoints. Authenticates
+    with an account-scoped token in the `accessToken` header; tokens are
+    environment-specific and issued under Data Solutions > API & Developer
+    Tools. `size` defaults to and maxes at 20, so pagination is mandatory, and
+    billing is metered per entity returned. A free Playground environment
+    scoped to the Cybersecurity feed is available for evaluation. Tracxn
+    publishes no OpenAPI; the machine-readable contract is its official public
+    Postman workspace.
   humanURL: https://w.tracxn.com/api-developers-page
-  baseURL: https://platform.tracxn.com/api/2.2
+  baseURL: https://platform.tracxn.com/api/3.0
   tags:
   - Companies
   - Investors
   - Funding Rounds
   - Acquisitions
+  - IPOs
   - Market Intelligence
   properties:
   - type: Documentation
     url: https://platform.tracxn.com/a/api/gettingstarted/apibasics
+  - type: APIReference
+    url: https://www.postman.com/tracxnapi/tracxn-api/folder/gg9mglv/companies-search-3-0
   - type: Postman
     url: https://www.postman.com/tracxnapi/tracxn-api/overview
   - type: Sandbox
     url: sandbox/tracxn-sandbox.yml
+  - type: RateLimits
+    url: rate-limits/tracxn-rate-limits.yml
+  - type: ErrorCatalog
+    url: errors/tracxn-problem-types.yml
+- name: Tracxn MCP Server
+  description: >-
+    Tracxn's official first-party remote Model Context Protocol server, exposing
+    the private-market database to any MCP-compatible AI client — Claude,
+    ChatGPT, Cursor, Gemini CLI, Perplexity, or anything built on the MCP SDK.
+    Eleven documented tools cover companies, legal entities, funding rounds,
+    acquisitions, investors, IPO events, time series, locations and sectors,
+    plus entity resolution from a company website to Tracxn's internal id and a
+    prompt-template loader. It is a hosted URL rather than an installable
+    package: a client is pointed at the endpoint and the end user authenticates
+    through browser OAuth 2.1 with PKCE and dynamic client registration, under a
+    single `read` scope. RFC 8414 and RFC 9728 discovery metadata are served,
+    so a generic client needs no Tracxn-specific configuration. Requires an
+    active subscription with MCP access; metered at one credit per result.
+  humanURL: https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp
+  baseURL: https://platform.tracxn.com/mcp
+  tags:
+  - MCP
+  - AI Agents
+  - Market Intelligence
+  - Company Data
+  properties:
+  - type: MCPServer
+    url: mcp/tracxn-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/tracxn-tool-crosswalk.yml
+  - type: OAuthScopes
+    url: scopes/tracxn-scopes.yml
+  - type: Documentation
+    url: https://help.tracxn.com/en/articles/15131870-available-data-tools-with-tracxn-mcp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -130,8 +171,26 @@ common:
   url: conformance/tracxn-conformance.yml
 - type: DataModel
   url: data-model/tracxn-data-model.yml
+- type: ToolCrosswalk
+  url: mcp/tracxn-tool-crosswalk.yml
+- type: OAuthScopes
+  url: scopes/tracxn-scopes.yml
+- type: WellKnown
+  url: well-known/tracxn-well-known.yml
+- type: RateLimits
+  url: rate-limits/tracxn-rate-limits.yml
+- type: Plans
+  url: plans/tracxn-plans-pricing.yml
+- type: Packages
+  url: packages/tracxn-packages.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Deprecation
+  url: lifecycle/tracxn-lifecycle.yml
+- type: APIReference
+  url: https://www.postman.com/tracxnapi/tracxn-api/folder/gg9mglv/companies-search-3-0
 x-enrichment:
-  date: '2026-07-21'
+  date: '2026-08-14'
   status: enriched
-  artifacts_added: 10
+  artifacts_added: 15
   pass: local-v1
