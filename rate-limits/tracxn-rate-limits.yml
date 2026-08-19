@@ -1,0 +1,144 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  "Rate Limits" section of the Tracxn API Guide, published verbatim in Tracxn's official
+  public Postman workspace collections "TracxnAPI Production" and "TracxnAPI Playground"
+  (https://www.postman.com/tracxnapi/tracxn-api), saved at
+  postman/tracxn-api-production.postman.json and postman/tracxn-api-playground.postman.json ;
+  https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis ;
+  https://help.tracxn.com/en/articles/11142749-faqs-on-api-credits ;
+  https://help.tracxn.com/en/articles/16049141-tracxn-mcp-credits
+provider: Tracxn
+providerId: tracxn
+description: >-
+  Tracxn publishes concrete numeric rate limits for all three REST environments in its own
+  API Guide, plus a separate, much tighter budget for the Key Metrics aggregation endpoints.
+  Two independent ceilings apply to every integration and they are easy to confuse: a
+  REQUEST-RATE limit (calls per second/minute/hour/day, HTTP 429 on breach) and a CREDIT
+  limit (1 credit per entity RETURNED, HTTP 403 on exhaustion, application code 900). An
+  agent can be well inside the rate limit and still be cut off by credits, because credits
+  are consumed by result volume rather than by call count.
+limit_count: 9
+docs: https://platform.tracxn.com/a/api/productionenvironment/ratelimiting
+docs_note: >-
+  The canonical in-platform rate-limiting page requires a login; the numbers below are from
+  the publicly readable copy of the same guide in the official Postman workspace. Tracxn
+  states "Limits may change without prior notice."
+limits:
+  - name: Production — per second
+    environment: production
+    scope: api-token
+    metric: requests_per_second
+    limit: 100
+    timeFrame: second
+  - name: Production — per minute
+    environment: production
+    scope: api-token
+    metric: requests_per_minute
+    limit: 1000
+    timeFrame: minute
+  - name: Production — per hour
+    environment: production
+    scope: api-token
+    metric: requests_per_hour
+    limit: 10000
+    timeFrame: hour
+  - name: Production — per day
+    environment: production
+    scope: api-token
+    metric: requests_per_day
+    limit: 100000
+    timeFrame: day
+  - name: Playground — per hour
+    environment: playground
+    scope: api-token
+    metric: requests_per_hour
+    limit: 100
+    timeFrame: hour
+  - name: Playground — per day
+    environment: playground
+    scope: api-token
+    metric: requests_per_day
+    limit: 1000
+    timeFrame: day
+  - name: Key Metrics APIs — per hour
+    environment: all
+    scope: endpoint-class
+    metric: requests_per_hour
+    limit: 10
+    timeFrame: hour
+    endpoints:
+      - POST /api/3.0/companies/metric
+      - POST /api/3.0/fundingrounds/metric
+      - POST /api/3.0/investors/metric
+      - POST /api/3.0/acquisitions/metric
+    note: >-
+      100x tighter than the general production hourly limit. The aggregation endpoints are
+      the expensive surface and are budgeted separately.
+  - name: Key Metrics APIs — per day
+    environment: all
+    scope: endpoint-class
+    metric: requests_per_day
+    limit: 100
+    timeFrame: day
+  - name: Entity IDs per request
+    environment: all
+    scope: request
+    metric: ids_per_request
+    limit: 500
+    timeFrame: request
+    note: >-
+      Companies Enrichment API and News API accept up to 500 company IDs per request; more
+      than that must be split across calls.
+response_size_limit:
+  max_entities_per_response: 20
+  default_entities_per_response: 20
+  note: >-
+    `size` defaults to 20 AND maxes out at 20 — there is no way to raise it. Pagination via
+    the `from` offset is mandatory for any result set above 20, and because credits are
+    charged per entity returned, they are consumed in multiples of 20 as a caller paginates.
+headers:
+  request: []
+  response: []
+  documented: false
+  note: >-
+    NO rate-limit response headers are documented — there is no X-RateLimit-*, no RateLimit-*
+    and no Retry-After in the published guide, and none was observed on live unauthenticated
+    probes. A client cannot read its remaining budget from a response and must track spend
+    locally or poll the in-platform credit page. This is the single biggest agent-readiness
+    gap in Tracxn's runtime contract: the limits are generous and clearly published, but they
+    are invisible at runtime.
+responseCodes:
+  throttled: 429
+  throttled_meaning: Rate Limit Exceeded — Slow down requests
+  credits_exhausted: 403
+  credits_exhausted_body: 'API out of credits'
+  credits_application_code: 900
+  credits_application_code_meaning: Credit Limit Exceeded — Contact support to renew
+  detail: errors/tracxn-problem-types.yml
+credits:
+  model: >-
+    Separate from request rate. 1 credit is deducted per ENTITY returned in a response — 15
+    companies returned costs 15 credits. Platform Export credits are a different pool and
+    cannot be exchanged for API credits.
+  zero_result_queries: Consume no credits.
+  unique_company_billing: >-
+    On the unique-company subscription model, the first successful access to a company counts
+    as 1 unique company; repeat access to the same company does not increase the count.
+  competitor_lookup: >-
+    The dedicated competitors endpoint returns basic details (names) without consuming unique
+    company credits; fetching full detail for those competitors does consume them.
+  allocation: Allocated at the start of each subscription cycle and refreshed monthly.
+  balance_page: https://platform.tracxn.com/a/api/productionenvironment/creditdetails
+  mcp:
+    unit: MCP credit
+    rule: 1 credit per result returned
+    free: Status checks
+    monthly_cap_per_user: 2000-10000 depending on plan
+    usage_page: https://platform.tracxn.com/a/s/manage/t/mycredits/t/tracxnmcp
+    detail: plans/tracxn-plans-pricing.yml
+retry_guidance: >-
+  Tracxn publishes no backoff algorithm and returns no Retry-After. Treat 429 as
+  retry-after-window (the smallest breached window: 1s, 1m, 1h or 1d) and treat 403 with
+  errorCode 900 / "API out of credits" as NON-retryable — retrying cannot succeed until
+  credits are renewed by Tracxn support.

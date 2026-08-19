@@ -1,0 +1,52 @@
+generated: '2026-08-14'
+method: generated
+source: >-
+  postman/tracxn-api-production.postman.json (Tracxn's official public Postman collection, 42
+  requests / 35 distinct endpoints, harvested 2026-08-14) and the 11 MCP tools published at
+  https://help.tracxn.com/en/articles/15131870-available-data-tools-with-tracxn-mcp
+notes: >-
+  Packaged Agent Skills for Tracxn's two programmatic surfaces. Tracxn publishes NO OpenAPI, so
+  there are no operationIds to bind to — every step below is instead grounded in a real endpoint
+  URL taken verbatim from Tracxn's own published Postman collection, or in a real MCP tool name
+  taken verbatim from Tracxn's own documentation. Nothing is invented. No provider-published
+  skills, AGENTS.md or llms.txt for the developer surface were found; the only llms.txt on the
+  estate indexes the help centre (llms/tracxn-help-center-llms.txt).
+
+  All three skills lead with the same two facts, because they are the ones that break naive
+  integrations: `size` is capped at 20 so pagination is mandatory, and billing is per ENTITY
+  RETURNED so pagination costs money. The aggregation endpoints are the intended escape hatch and
+  are rate-limited 100x tighter than everything else.
+skills:
+  - file: tracxn-company-research.md
+    name: Research a private company on Tracxn
+    api: postman/tracxn-api-production.postman.json
+    surfaces: [mcp, rest]
+    mcp_tools: [resolve_entities, search_companies, search_funding_rounds, search_investors, search_acquisitions, search_time_series]
+    operations:
+      - POST /api/3.0/companies
+      - POST /api/3.0/fundingrounds
+      - POST /api/2.2/investors
+      - POST /api/3.0/acquisitions
+      - POST /api/3.0/ipos
+      - POST /api/3.0/timeseries/revenue
+      - POST /api/3.0/timeseries/valuation
+      - POST /api/3.0/timeseries/employeecountannualreport
+  - file: tracxn-sector-landscape.md
+    name: Map a sector landscape and its funding activity on Tracxn
+    api: postman/tracxn-api-production.postman.json
+    surfaces: [rest, mcp]
+    mcp_tools: [search_sectors, search_companies, search_funding_rounds]
+    operations:
+      - POST /api/3.0/practiceareas
+      - POST /api/3.0/feeds
+      - POST /api/3.0/companies
+      - POST /api/3.0/fundingrounds
+      - POST /api/3.0/companies/metric
+      - POST /api/3.0/fundingrounds/metric
+      - POST /api/3.0/acquisitions/metric
+  - file: tracxn-mcp-connect.md
+    name: Connect an AI client to the Tracxn MCP server
+    api: mcp/tracxn-mcp.yml
+    surfaces: [mcp]
+    mcp_tools: [load_prompts, resolve_entities, search_companies, search_legal_entities, search_funding_rounds, search_acquisitions, search_investors, search_ipo_events, search_time_series, search_locations, search_sectors]
+    operations: []

@@ -1,33 +1,160 @@
-generated: '2026-07-21'
-method: derived
+generated: '2026-08-14'
+method: searched
 source: >-
-  derived from authentication/tracxn-authentication.yml,
-  conventions/tracxn-conventions.yml and live probes of
-  https://platform.tracxn.com/api/2.2 (2026-07-21)
+  Live probes 2026-08-14 of https://platform.tracxn.com/mcp,
+  https://platform.tracxn.com/.well-known/oauth-authorization-server/mcp (HTTP 200) and
+  https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp (HTTP 200) ;
+  the Tracxn API Guide published in the official Postman workspace
+  (postman/tracxn-api-production.postman.json) ;
+  https://help.tracxn.com/en/articles/15131917-security-data-access-troubleshooting ;
+  https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis ;
+  and the artifacts already in this repo (authentication/, conventions/, errors/, well-known/)
 description: >-
-  Cross-cutting standards posture of the Tracxn API v2.2, derived from the
-  captured auth/conventions artifacts and live probes. Tracxn publishes no
-  public OpenAPI, so assertions are limited to what the observed contract
-  demonstrates.
+  Cross-cutting standards posture. The headline change from earlier passes is OAuth: Tracxn does
+  now conform to the modern OAuth/MCP discovery stack, but only on its MCP surface — it publishes
+  RFC 8414 authorization-server metadata, RFC 9728 protected-resource metadata, mandatory PKCE and
+  RFC 7591 dynamic client registration, which together make the MCP server connectable by a
+  generic client with no vendor-specific setup. The REST surface conforms to almost nothing
+  beyond plain JSON-over-HTTPS: no OpenAPI, no problem+json, no standard rate-limit headers, no
+  security.txt, no OIDC.
 standards:
-- id: oauth2
-  conforms: false
-  evidence: API-key style `accesstoken` header only; no OAuth 2.0 flows documented
-- id: oidc
-  conforms: false
-  evidence: /.well-known/openid-configuration returns 404 on tracxn.com and platform.tracxn.com (probed 2026-07-21)
-- id: rfc9457-problem-details
-  conforms: false
-  evidence: errors use a custom {errorCode, message} JSON envelope, not application/problem+json
-- id: rfc9116-security-txt
-  conforms: false
-  evidence: /.well-known/security.txt returns 404 on tracxn.com and platform.tracxn.com (probed 2026-07-21)
-- id: json-api
-  conforms: false
-  evidence: query-by-POST filter contract with custom JSON shapes, not JSON:API media type
-- id: pagination
-  conforms: true
-  evidence: size-bounded result windows on query endpoints (see conventions/tracxn-conventions.yml)
-- id: idempotency
-  conforms: false
-  evidence: no idempotency-key contract documented; surface is read-only queries
+  - id: mcp
+    name: Model Context Protocol
+    conforms: true
+    evidence: >-
+      Official remote MCP server at https://platform.tracxn.com/mcp exposing 11 documented tools;
+      responds to a spec-formed `initialize` with a compliant 401 + WWW-Authenticate challenge
+      (probed 2026-08-14). Supported clients include Claude, ChatGPT, Cursor, Gemini CLI and
+      Perplexity.
+    caveat: >-
+      An unauthenticated `tools/list` returns a bare 500 rather than a 401 — a protocol rough edge.
+  - id: oauth2
+    name: OAuth 2.1 authorization code + PKCE
+    conforms: true
+    surface: mcp
+    evidence: >-
+      grant_types_supported ["authorization_code"], code_challenge_methods_supported ["S256"],
+      response_types_supported ["code"], token_endpoint_auth_methods_supported ["none"] — from
+      well-known/tracxn-oauth-authorization-server-mcp.json (HTTP 200).
+    caveat: The REST API uses a static API key with no OAuth flow at all.
+  - id: rfc8414
+    name: OAuth 2.0 Authorization Server Metadata
+    conforms: true
+    evidence: >-
+      https://platform.tracxn.com/.well-known/oauth-authorization-server/mcp returns 200 with a
+      complete metadata document (issuer, authorization_endpoint, token_endpoint,
+      registration_endpoint, scopes_supported).
+  - id: rfc9728
+    name: OAuth 2.0 Protected Resource Metadata
+    conforms: true
+    evidence: >-
+      https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp returns 200 with
+      resource, scopes_supported and authorization_servers; the MCP 401 advertises it via
+      WWW-Authenticate resource_metadata.
+  - id: rfc7591
+    name: OAuth 2.0 Dynamic Client Registration
+    conforms: true
+    evidence: registration_endpoint https://platform.tracxn.com/auth/2.0/mcp/register advertised in AS metadata.
+  - id: oidc
+    name: OpenID Connect
+    conforms: false
+    evidence: >-
+      /.well-known/openid-configuration returns 404 on tracxn.com and platform.tracxn.com, and
+      /.well-known/openid-configuration/mcp also 404s (probed 2026-08-14). The MCP auth server is
+      OAuth-only; no id_token or userinfo surface is published.
+  - id: openapi
+    name: OpenAPI
+    conforms: false
+    evidence: >-
+      No OpenAPI or Swagger document exists at any probed location on platform.tracxn.com,
+      tracxn.com, w.tracxn.com or docs.tracxn.com (/openapi.json, /openapi.yaml, /swagger.json,
+      /api-docs, /v1/openapi.json, /redoc, /docs — all 404, or SPA HTML on docs.tracxn.com). The
+      machine-readable contract Tracxn does publish is a Postman collection.
+  - id: rfc9457
+    name: Problem Details for HTTP APIs
+    conforms: false
+    evidence: >-
+      Errors use a custom {errorCode, message} JSON envelope, not application/problem+json. The
+      published code table even includes a non-HTTP application code (900) delivered inside a 403.
+  - id: rfc9116
+    name: security.txt
+    conforms: false
+    evidence: >-
+      /.well-known/security.txt returns 404 on tracxn.com, platform.tracxn.com and w.tracxn.com.
+      The only security.txt on the estate is served at help.tracxn.com and belongs to INTERCOM
+      (canonical https://app.intercom.com/.well-known/security.txt), not Tracxn.
+  - id: rfc8594
+    name: Sunset / Deprecation headers
+    conforms: false
+    evidence: >-
+      Tracxn publishes a prose deprecation notice for API v2.2 but returns no Sunset or Deprecation
+      response headers and states no end-of-life date. See lifecycle/tracxn-lifecycle.yml.
+  - id: ratelimit-headers
+    name: IETF RateLimit header fields
+    conforms: false
+    evidence: >-
+      No RateLimit-*, X-RateLimit-* or Retry-After header is documented or observed, despite
+      precise numeric limits being published in the API Guide.
+  - id: json-api
+    name: JSON:API
+    conforms: false
+    evidence: Query-by-POST filter contract with custom JSON shapes; not the JSON:API media type.
+  - id: pagination
+    name: Pagination
+    conforms: true
+    evidence: >-
+      Documented offset pagination — `from` (default 0) and `size` (default and maximum 20) — in
+      the published request-body contract.
+  - id: idempotency
+    name: Idempotency keys
+    conforms: false
+    evidence: >-
+      No idempotency-key contract. Mitigated by the surface being entirely read-only queries, though
+      replays can re-consume credits.
+  - id: webhooks
+    name: Webhooks / server-side push
+    conforms: false
+    evidence: >-
+      Provider statement: "Currently, Tracxn does not support server-side push or webhooks. However,
+      this feature is part of our product roadmap."
+  - id: asyncapi
+    name: AsyncAPI
+    conforms: false
+    evidence: No event or streaming surface exists to describe; not applicable rather than missing.
+  - id: a2a
+    name: A2A Agent Card
+    conforms: false
+    evidence: >-
+      /.well-known/agent-card.json and /.well-known/agent.json return 404 on every Tracxn host
+      (probed 2026-08-14). docs.tracxn.com answers 200 for these paths but with the SPA HTML shell,
+      which is not a card.
+  - id: llmstxt
+    name: llms.txt
+    conforms: partial
+    evidence: >-
+      No /llms.txt on tracxn.com, platform.tracxn.com or w.tracxn.com. One real llms.txt is served
+      at https://help.tracxn.com/llms.txt (Intercom-generated, 394 lines of Tracxn help content,
+      each article with a .md twin) — genuine and useful to agents, but it indexes the help centre
+      rather than the developer surface, and it is generated by the help-desk vendor rather than
+      authored by Tracxn.
+compliance_certifications:
+  published: false
+  probed:
+    - url: https://tracxn.com/trust
+      status: 404
+    - url: https://tracxn.com/security
+      status: 404
+  note: >-
+    No trust centre, and no named security certification (SOC 2, ISO 27001, PCI, HIPAA, FedRAMP) is
+    published anywhere on the public estate. The only compliance-adjacent public statements are
+    contractual: a Master Services Agreement obligation to delete Tracxn data at the end of the
+    subscription term, a published GDPR page (https://tracxn.com/gdpr), and the MCP OAuth
+    credential-isolation and data-residency statements. That is not a certification programme, so
+    NO Compliance pointer is emitted. Tracxn is a listed public company (NSE: TRACXN) and files
+    accordingly, but stock-exchange disclosure is not an information-security certification.
+  gdpr_page: https://tracxn.com/gdpr
+vulnerability_disclosure:
+  published: false
+  note: >-
+    probe-security-programs.py found no bug bounty, no disclosure policy and no security.txt for
+    Tracxn (vdp=none, trust=none, 2026-08-14). No Security pointer is emitted.

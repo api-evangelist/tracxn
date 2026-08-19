@@ -1,53 +1,162 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
 status: published
-source: https://w.tracxn.com/tracxn-mcp
+source: >-
+  https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp (server URL + auth) ;
+  https://help.tracxn.com/en/articles/15131870-available-data-tools-with-tracxn-mcp
+  (the 11-tool list, verbatim) ;
+  https://help.tracxn.com/en/articles/15131843-connect-any-other-mcp-compatible-client
+  (generic client config) ;
+  https://help.tracxn.com/en/articles/16049141-tracxn-mcp-credits (credit model) ;
+  https://help.tracxn.com/en/articles/15131917-security-data-access-troubleshooting ;
+  live anonymous probe of https://platform.tracxn.com/mcp on 2026-08-14
 description: >-
-  Tracxn publishes an official MCP (Model Context Protocol) connector that
-  links its private-market database to AI assistants — positioned as "the
-  connector that links Tracxn's data to AI tools like Claude." It is enabled
-  from the Tracxn platform's AI-integrations portal and requires an active
-  Tracxn subscription with MCP access; supported clients include Claude,
-  ChatGPT, Gemini, Cursor and other MCP-compatible environments. The public
-  page documents data categories exposed conversationally rather than a
-  formal tool list; the connect flow lives behind the platform login. A
-  separate community stdio server (vatsal191201/tracxn-mcp on GitHub) wraps
-  the Tracxn REST API v2.2 with a user's own access token and predates the
-  official connector.
+  Tracxn operates an official, first-party, REMOTE MCP server that exposes the private-market
+  database — companies, legal entities, funding rounds, acquisitions, investors, IPOs, time
+  series, locations and sectors — to any MCP-compatible AI client. It is a real hosted agent
+  surface, not a packaged one: a client is pointed at a single https URL and authenticates the
+  end user through browser OAuth. The server advertises RFC 9728 protected-resource metadata
+  and RFC 8414 authorization-server metadata (both saved under well-known/), supports dynamic
+  client registration and PKCE, and therefore works with a generic MCP client with no
+  Tracxn-specific configuration beyond the URL. Access requires an active Tracxn subscription
+  with MCP access enabled, and is metered in MCP credits at 1 credit per result returned.
+deployment:
+  mode: remote
+  endpoint: https://platform.tracxn.com/mcp
+  auth: oauth
+  verified: probed
+  checked: '2026-08-14'
+  probe:
+    method: POST
+    url: https://platform.tracxn.com/mcp
+    initialize_status: 401
+    tools_list_status: 500
+    server_header: uvicorn
+    www_authenticate: >-
+      Bearer realm="mcp",
+      resource_metadata="https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp"
+    note: >-
+      A correctly-formed `initialize` returns 401 with a spec-compliant RFC 9728 challenge,
+      which is positive proof of a live MCP server (an absent endpoint 404s and the platform
+      SPA answers HTML). `tools/list` without a session returns a bare 500 from uvicorn rather
+      than a 401 — a server-side rough edge worth reporting to Tracxn, not evidence of absence.
+      The tool list below is therefore taken from Tracxn's own published documentation, not
+      from a live tools/list; input schemas require authenticated introspection.
+  install: null
+  package: null
 server:
   name: Tracxn MCP
   official: true
   transport: http
-  connect: https://platform.tracxn.com/a/integrations#a:ai-integrations
+  url: https://platform.tracxn.com/mcp
+  config_example: |
+    {
+      "mcpServers": {
+        "tracxn": {
+          "url": "https://platform.tracxn.com/mcp"
+        }
+      }
+    }
+  request_access: https://platform.tracxn.com/a/integrations#a:ai-integrations
+  docs: https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp
+  last_documented_update: '2026-05-11'
   auth:
-    scheme: Tracxn subscription with MCP access enabled
-    support: apidesk@tracxn.com
-  clients:
-  - Claude
-  - ChatGPT
-  - Gemini
-  - Cursor
-data_categories:
-- name: Companies
-  description: Startup and private company profiles
-- name: Funding Rounds
-  description: Investment tracking across stages
-- name: Investors
-  description: VC, PE, and angel portfolio analysis
-- name: Acquisitions & IPOs
-  description: M&A and exit monitoring
-- name: Sectors & Trends
-  description: 3,000+ industry feeds
-- name: Financials & Legal Data
-  description: Cap tables and entity information
+    scheme: oauth
+    flow: authorization_code
+    pkce: S256
+    dynamic_client_registration: true
+    scopes: [read]
+    authorization_endpoint: https://platform.tracxn.com/auth/2.0/mcp/authorize
+    token_endpoint: https://platform.tracxn.com/auth/2.0/mcp/token
+    registration_endpoint: https://platform.tracxn.com/auth/2.0/mcp/register
+    protected_resource_metadata: well-known/tracxn-oauth-protected-resource-mcp.json
+    authorization_server_metadata: well-known/tracxn-oauth-authorization-server-mcp.json
+    detail: scopes/tracxn-scopes.yml
+    api_token: >-
+      Documented as "Coming Soon" for in-house AI platforms and Microsoft Copilot Studio.
+      Not available at this pass — OAuth is the only working method.
+    entitlement: Active Tracxn subscription with MCP access enabled (available on request)
+    support: support@tracxn.com
+  clients_supported:
+    oauth:
+      - Claude (claude.ai and Claude Desktop)
+      - ChatGPT (all plans, including free)
+      - Cursor (all plans, including free)
+      - Gemini CLI
+      - Perplexity
+    generic:
+      - Cline (VS Code)
+      - Continue
+      - Windsurf
+      - Any client built on the MCP SDK
+    api_token_coming_soon:
+      - Microsoft Copilot Studio
+      - Customer in-house LLM platforms
+  security_posture:
+    oauth_isolation: >-
+      Tracxn never receives the AI client's credentials and the AI client never receives the
+      user's Tracxn password (provider statement).
+    data_residency: All queries are processed by Tracxn's servers; no Tracxn data is stored by the AI client beyond the conversation.
+    revocation: The user disconnects the integration in their AI client.
+    multi_client: One Tracxn account may be connected to several AI clients simultaneously.
+tools:
+  # Verbatim from "Available Data Tools with Tracxn MCP". Names and descriptions are the
+  # provider's; inputSchema is NOT published and requires authenticated tools/list.
+  count: 11
+  input_schemas: gated
+  list:
+    - name: load_prompts
+      description: Loads instructions and prompt templates that guide how the AI uses the MCP
+    - name: search_companies
+      description: Search and fetch detailed company information by name or domain
+    - name: search_legal_entities
+      description: Search and retrieve legal entity details linked to companies
+    - name: search_funding_rounds
+      description: Search funding round history, amounts, and investors
+    - name: search_acquisitions
+      description: Search acquisition records and deal details
+    - name: search_investors
+      description: Search investor profiles and portfolio data
+    - name: search_ipo_events
+      description: Search IPO events and public market history
+    - name: search_time_series
+      description: Search historical data — financials and employee growth
+    - name: search_locations
+      description: Search and filter companies by geographic location
+    - name: search_sectors
+      description: Search and filter companies by industry sector
+    - name: resolve_entities
+      description: >-
+        Resolves a company website to Tracxn's internal entity ID — used to link external
+        domains to the correct Tracxn record
+crosswalk: mcp/tracxn-tool-crosswalk.yml
+metering:
+  unit: MCP credit
+  rule: 1 credit per result returned (a company, funding round, investor, acquisition, etc.)
+  free_operations: Status checks (e.g. "Am I connected to MCP?")
+  zero_result_queries: Consume no credits
+  monthly_cap_per_user: 2000-10000 depending on subscription plan
+  usage_page: https://platform.tracxn.com/a/s/manage/t/mycredits/t/tracxnmcp
+  detail: plans/tracxn-plans-pricing.yml
 community_servers:
-- name: tracxn-mcp
-  official: false
-  transport: stdio
-  source: https://github.com/vatsal191201/tracxn-mcp
-  auth:
-    env: TRACXN_ACCESS_TOKEN
-  note: >-
-    Community Python MCP server wrapping the Tracxn REST API v2.2
-    (companies/investors/transactions/acquisitions), defaulting to the
-    Playground environment.
+  - name: tracxn-mcp
+    official: false
+    transport: stdio
+    source: https://github.com/vatsal191201/tracxn-mcp
+    auth:
+      env: TRACXN_ACCESS_TOKEN
+    note: >-
+      Community Python MCP server wrapping the Tracxn REST API v2.2
+      (companies/investors/transactions/acquisitions), defaulting to the Playground
+      environment. Unaffiliated with Tracxn and predates the official connector. Published
+      to no package registry.
+corrections:
+  - date: '2026-08-14'
+    field: deployment.endpoint
+    was: https://platform.tracxn.com/a/integrations#a:ai-integrations
+    now: https://platform.tracxn.com/mcp
+    reason: >-
+      The previous value was the in-platform UI page where a customer REQUESTS MCP access —
+      a browser fragment URL, not something an MCP client can POST to. Tracxn publishes the
+      real server URL in its help centre and the endpoint answers a live MCP OAuth challenge.
+      The request-access page is retained as server.request_access.

@@ -1,0 +1,46 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Registry searches performed 2026-08-14 against npm, PyPI, RubyGems, crates.io, plus a
+  review of the Tracxn Help Center developer articles
+  (https://help.tracxn.com/en/articles/6635126-what-is-tracxn-s-api,
+  https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis) and the
+  official public Postman workspace (https://www.postman.com/tracxnapi/tracxn-api).
+packages: []
+official_sdk_count: 0
+note: >-
+  Tracxn publishes NO first-party client library in any public package registry, in any
+  language. This is a deliberate posture rather than an oversight: Tracxn's own help
+  centre answers the SDK question by describing "multi-language support including Google
+  Scripts, Python, Java, C#, PHP and Curl" — which is Postman's per-language code-snippet
+  generator applied to the public Postman collection, not a maintained SDK. The
+  distribution model is the collection: customers fork
+  https://www.postman.com/tracxnapi/tracxn-api and generate a snippet in their language.
+  Consequently NO `SDKs` pointer is emitted — there is no official SDK for `sdk_count` to
+  read, and emitting one on the strength of a code-snippet generator would be false credit.
+registries_searched:
+  - registry: npm
+    queries: [tracxn, '@tracxn/sdk', tracxn-api, tracxn-mcp, '@tracxn/mcp']
+    status: 404 on every exact name
+    search_total: 0
+    note: The npm registry text search for "tracxn" returns 0 packages of any authorship.
+  - registry: pypi
+    queries: [tracxn, tracxn-api, tracxn-mcp]
+    status: 404 on every exact name
+  - registry: rubygems
+    queries: [tracxn]
+    status: 404
+  - registry: crates.io
+    queries: [tracxn]
+    status: 403 (registry rejects unauthenticated UA; no crate named tracxn is referenced anywhere in Tracxn's docs)
+mcp_client_note: >-
+  The Tracxn MCP server is remote and OAuth-authenticated, so it needs no installable
+  package at all — an MCP client is pointed at the URL. Tracxn's own "Connect any other
+  MCP-compatible client" article accordingly recommends the GENERIC upstream SDKs
+  (modelcontextprotocol/python-sdk, @modelcontextprotocol/sdk), which belong to the MCP
+  project and must not be attributed to Tracxn. See mcp/tracxn-mcp.yml.
+third_party_note: >-
+  One community package exists and is NOT first-party: github.com/vatsal191201/tracxn-mcp,
+  a Python stdio MCP server wrapping the REST API v2.2 with the user's own access token.
+  It is unaffiliated with Tracxn, predates the official connector, and is published to no
+  registry. Do not mark it official.

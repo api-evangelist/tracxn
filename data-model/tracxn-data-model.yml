@@ -1,50 +1,210 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: derived
 source: >-
-  derived from the Tracxn API v2.2 endpoint surface
-  (companies/investors/transactions/acquisitiontransactions) and the data
-  categories published for the official Tracxn MCP
-  (https://w.tracxn.com/tracxn-mcp)
+  Derived from the 35 distinct endpoint URLs and 42 published request bodies in Tracxn's official
+  public Postman collection (postman/tracxn-api-production.postman.json, harvested from
+  https://www.postman.com/tracxnapi/tracxn-api), the 11 published MCP tools
+  (mcp/tracxn-mcp.yml), and the Tracxn Help Center database documentation indexed by
+  llms/tracxn-help-center-llms.txt. Tracxn publishes no machine-readable schema, so entity FIELDS
+  are not enumerated here — only the entities, their endpoints and the reference edges the
+  published filter keys prove.
 description: >-
-  Entity graph of the Tracxn private-market dataset as exposed by the API
-  v2.2 endpoints and the MCP data categories. Tracxn publishes no public
-  schema reference; entities and relationships below are derived from the
-  endpoint surface and the platform's published data categories (companies,
-  funding rounds, investors, acquisitions & IPOs, sectors & trends,
-  financials & legal data), not from a machine-readable spec.
+  Entity graph of the Tracxn private-market dataset. Company is the hub: nearly every other entity
+  either describes a company, links two companies, or classifies them. Relationships below are
+  evidenced by real filter keys seen in Tracxn's own example request bodies (companyId,
+  practiceAreaId, feedId, country, companyStage) and by the endpoint structure itself, not by a
+  schema. Note the v2.2 -> v3.0 rename of the transaction entities, and that Legal Entity is a
+  first-class database on the platform and in MCP but has no public REST endpoint.
+identifiers:
+  format: 24-character hexadecimal object id
+  examples:
+    companyId: 685d395b56851c1154788da6
+    practiceAreaId: 5409cb72e4b0efef66413044
+    feedId: 52ff2cfce4b0b193ed664d1a
+  resolution: >-
+    Every entity is keyed on an internal Tracxn id. Resolving an external identifier (a company
+    website/domain) to that id is a first-class MCP tool (resolve_entities) but has no dedicated
+    REST endpoint — on REST a caller filters /companies by domain and reads the id from the result.
 entities:
-- name: Company
-  endpoint: /companies
-  description: Startup / private company profile, the core entity
-- name: Investor
-  endpoint: /investors
-  description: VC, PE, or angel investor profile with portfolio
-- name: Transaction
-  endpoint: /transactions
-  description: Funding round linking investors to a company
-- name: AcquisitionTransaction
-  endpoint: /acquisitiontransactions
-  description: M&A / exit event for a company
-- name: Feed
-  description: Sector / industry feed (3,000+) used as the primary filter taxonomy
+  - name: Company
+    endpoints:
+      - POST /api/3.0/companies
+      - POST /api/2.2/companies
+      - POST /api/2.2/companies/search
+    mcp_tool: search_companies
+    description: >-
+      Startup / private company profile — the core entity. Carries a `lastUpdatedDate` freshness
+      field. Documented facets include stage, funding, investors, competitors, financials, cap
+      table, filings and news.
+    known_filter_keys: [companyId, country, companyStage, practiceAreaId, feedName, latestFundingDate]
+  - name: LegalEntity
+    endpoints: []
+    mcp_tool: search_legal_entities
+    description: >-
+      Registered legal entity linked to a company, with corporate structure, risk indicators,
+      leadership and workforce, financial performance, cap table, trademarks and patents. A full
+      platform database and an MCP tool, but NO public REST endpoint appears in the collection.
+    rest_available: false
+  - name: FundingRound
+    endpoints:
+      - POST /api/3.0/fundingrounds
+      - POST /api/2.2/transactions
+    mcp_tool: search_funding_rounds
+    description: Investment round linking investors to a company; amount, date, stage, participants.
+    renamed_from: Transaction (v2.2)
+  - name: Acquisition
+    endpoints:
+      - POST /api/3.0/acquisitions
+      - POST /api/2.2/acquisitiontransactions
+    mcp_tool: search_acquisitions
+    description: M&A event linking an acquirer company to an acquired company.
+    renamed_from: AcquisitionTransaction (v2.2)
+  - name: IPO
+    endpoints:
+      - POST /api/3.0/ipos
+    mcp_tool: search_ipo_events
+    description: IPO / public-listing event for a company. v3.0 only — no v2.2 equivalent.
+  - name: Investor
+    endpoints:
+      - POST /api/2.2/investors
+      - POST /api/3.0/investors/metric
+    mcp_tool: search_investors
+    description: >-
+      VC, PE, corporate or angel investor with a portfolio. Note the asymmetry: v3.0 exposes only
+      investor AGGREGATION; investor search remains a v2.2 endpoint.
+  - name: TimeSeriesPoint
+    endpoints:
+      - POST /api/3.0/timeseries/revenue
+      - POST /api/3.0/timeseries/netprofit
+      - POST /api/3.0/timeseries/ebitda
+      - POST /api/3.0/timeseries/valuation
+      - POST /api/3.0/timeseries/balancesheetassets
+      - POST /api/3.0/timeseries/balancesheetequity
+      - POST /api/3.0/timeseries/balancesheetliability
+      - POST /api/3.0/timeseries/cashflowoperatingactivity
+      - POST /api/3.0/timeseries/cashflowinvestingactivity
+      - POST /api/3.0/timeseries/employeecountlabourfilings
+      - POST /api/3.0/timeseries/employeecountannualreport
+      - POST /api/2.2/companies/timeseries/revenue
+      - POST /api/2.2/companies/timeseries/valuation
+      - POST /api/2.2/companies/timeseries/employeecount
+      - POST /api/2.2/companies/timeseries/ebidta
+      - POST /api/2.2/companies/timeseries/netprofit
+    mcp_tool: search_time_series
+    description: >-
+      Year-over-year metric series attached to a company — financials (revenue, net profit, EBITDA,
+      balance sheet, cash flow), valuation, and employee count. Always filtered by companyId.
+    note: >-
+      Values are raw per year; YoY growth percentages are NOT provided and must be computed
+      client-side. In v3.0 employee count splits by source of record (labour filings vs annual
+      report), which means two series can legitimately disagree for the same company.
+  - name: Feed
+    endpoints:
+      - POST /api/3.0/feeds
+      - POST /api/2.2/feeds
+    mcp_tool: search_sectors
+    description: >-
+      Sector / industry feed — the primary classification taxonomy (3,000+ feeds). Carries
+      publishStatus and compsCurationStatus. Business Models are queried through the same endpoint
+      with a `dataset` discriminator.
+  - name: PracticeArea
+    endpoints:
+      - POST /api/3.0/practiceareas
+      - POST /api/2.2/practiceareas
+    mcp_tool: search_sectors
+    description: Top level of the sector taxonomy, above Feed (e.g. Fintech, Retail).
+  - name: Metric
+    endpoints:
+      - POST /api/3.0/companies/metric
+      - POST /api/3.0/fundingrounds/metric
+      - POST /api/3.0/investors/metric
+      - POST /api/3.0/acquisitions/metric
+    mcp_tool: null
+    description: >-
+      Not a stored entity but an aggregation projection: a filter plus a `metric` (e.g. "count")
+      plus a `bucket` field list, returning grouped counts. Reachable only over REST — no MCP tool
+      returns aggregates. Rate-limited far more tightly than the rest of the API (10/hour).
+  - name: BookmarkList
+    endpoints:
+      - POST /api/2.2/bookmarkslist
+    mcp_tool: null
+    description: >-
+      A user's saved/custom list inside the platform — a workspace object rather than market data.
+      v2.2 only, and unreachable from MCP.
+  - name: Person
+    endpoints: []
+    mcp_tool: null
+    description: >-
+      Founders, CXOs, senior management, board members and angel investors, reachable only THROUGH
+      company records — Tracxn states that direct or standalone querying of the People database
+      with broad filters is not supported, and that People access requires the Standard API plan
+      above the 50K company tier.
+    rest_available: via-company-only
+  - name: NewsEvent
+    endpoints: []
+    mcp_tool: null
+    description: >-
+      News items, filterable by feedName to scope to a sector. Referenced by Tracxn's FAQs as the
+      "News API" and subject to the 500-ids-per-request cap, but no news endpoint appears in the
+      public Postman collection.
+    rest_available: undocumented-publicly
 relationships:
-- from: Company
-  to: Transaction
-  kind: has_many
-  via: funding rounds raised by the company
-- from: Transaction
-  to: Investor
-  kind: has_many
-  via: participating investors in a round
-- from: Investor
-  to: Company
-  kind: has_many
-  via: portfolio companies
-- from: Company
-  to: AcquisitionTransaction
-  kind: has_many
-  via: acquisition / exit events involving the company
-- from: Company
-  to: Feed
-  kind: belongs_to
-  via: feedName classification (e.g. Cybersecurity)
+  - from: Company
+    to: FundingRound
+    kind: has_many
+    via: funding rounds raised by the company
+  - from: FundingRound
+    to: Investor
+    kind: has_many
+    via: investors participating in the round
+  - from: Investor
+    to: Company
+    kind: has_many
+    via: portfolio companies
+  - from: Company
+    to: Acquisition
+    kind: has_many
+    via: acquisition / exit events involving the company (as acquirer or target)
+  - from: Company
+    to: IPO
+    kind: has_many
+    via: public listing events
+  - from: Company
+    to: TimeSeriesPoint
+    kind: has_many
+    via: companyId filter on every /timeseries/* endpoint
+  - from: Company
+    to: LegalEntity
+    kind: has_many
+    via: legal entities registered for the company
+  - from: Company
+    to: Person
+    kind: has_many
+    via: founders, CXOs, board members surfaced on the company record
+  - from: Company
+    to: Feed
+    kind: belongs_to
+    via: feedName / feedId classification
+  - from: Feed
+    to: PracticeArea
+    kind: belongs_to
+    via: practiceAreaId — the taxonomy is two-level, PracticeArea above Feed
+  - from: Company
+    to: Company
+    kind: has_many
+    via: competitors (derived by Tracxn; a dedicated endpoint returns names without consuming unique-company credits)
+  - from: Company
+    to: NewsEvent
+    kind: has_many
+    via: news coverage, filterable by feedName
+  - from: BookmarkList
+    to: Company
+    kind: has_many
+    via: user-curated membership
+taxonomy_note: >-
+  Tracxn states the taxonomy itself is proprietary intellectual property and is deliberately NOT
+  exposed via the API — the /feeds and /practiceareas endpoints let a caller FILTER by it and look
+  up individual nodes, but the classification tree cannot be exported wholesale.
+coverage_note: >-
+  7.7M+ companies across 2,000+ sectors, 3K+ feeds and 55K+ taxonomies (company description in
+  apis.yml); the API developer page cites "over 8M+ companies".

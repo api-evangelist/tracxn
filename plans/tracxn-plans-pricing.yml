@@ -1,0 +1,95 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis ;
+  https://help.tracxn.com/en/articles/11142749-faqs-on-api-credits ;
+  https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis ;
+  https://help.tracxn.com/en/articles/16049141-tracxn-mcp-credits ;
+  https://help.tracxn.com/en/articles/15131961-faqs-tracxn-mcp ;
+  https://tracxn.com/pricing (probed 2026-08-14, HTTP 200, JS-rendered marketing page — no
+  API price is stated on it)
+provider: Tracxn
+providerId: tracxn
+plan_count: 0
+published_prices: false
+description: >-
+  Tracxn publishes NO price for API or MCP access. There is no self-serve tier, no public
+  rate card and no way to buy programmatic access without talking to sales — the pricing page
+  and the API developer page both terminate in "contact us". What Tracxn DOES publish, in
+  detail, is the SHAPE of the commercial model, and that is recorded below: an annual
+  subscription metered on the number of UNIQUE COMPANIES whose data is accessed, with credits
+  allocated per cycle and refreshed monthly. plan_count is 0 because no purchasable tier with
+  a stated price exists, not because the model is undocumented.
+billing_model:
+  unit: unique company accessed
+  rule: >-
+    The first successful access to a company counts as 1 unique company; repeated access to
+    the same company does not increase the count. API calls returning empty or null responses
+    consume nothing.
+  credit_deduction: 1 credit per entity returned (company, funding round, investor, acquisition)
+  term: Annual subscription is the standard period
+  allocation: Credits allocated at the start of each subscription cycle, refreshed monthly
+  reset: Follows the terms of the subscription plan
+  exhaustion: HTTP 403, message "API out of credits", application code 900 — contact support to renew
+  credit_pools_are_separate: >-
+    Platform Export credits and API credits are distinct pools and CANNOT be exchanged for one
+    another. MCP credits are a third, separately-capped pool.
+plans: []
+named_tiers:
+  - name: Standard API plan
+    price: null
+    currency: null
+    note: >-
+      Named explicitly in Tracxn's FAQ, with a "50K company tier" referenced as a threshold
+      above which People data access can be provided. This is the only named API tier and no
+      price is attached to it anywhere public.
+    tiering_metric: unique companies
+    referenced_threshold: 50000 unique companies
+  - name: Pipeline Enrichment (custom)
+    price: null
+    currency: null
+    note: >-
+      Customised pricing for low-volume, high-frequency enrichment workflows — Tracxn cites
+      100-200 companies per month as the shape. Arranged with sales, not published.
+trial:
+  available: true
+  self_serve: false
+  duration_days: 5-7
+  description: >-
+    A 5-7 day Proof of Concept trial with limited credits, arranged through sales. Access can
+    be enabled for selected APIs — Companies, Funding, Acquisitions, Investors and Time Series.
+    Full Production API access is NOT included in the trial.
+  token_behaviour: Trial API tokens are automatically revoked when the trial period ends.
+free_tier:
+  available: true
+  name: Playground / Sandbox
+  price: 0
+  currency: USD
+  description: >-
+    Tracxn's own words: "a free, fully-featured platform meant for safe testing of prototypes
+    and integrations." Requires a Tracxn account and its own token, is scoped to the
+    Cybersecurity feed, is rate-limited to 100 calls/hour and 1,000 calls/day, and does NOT
+    consume credits. Commercial use is explicitly prohibited.
+    See sandbox/tracxn-sandbox.yml.
+  commercial_use: prohibited
+mcp_plan:
+  entitlement: Active Tracxn subscription with MCP access enabled
+  availability: On request via https://platform.tracxn.com/a/integrations#a:ai-integrations
+  price: null
+  metering: 1 MCP credit per result returned; status checks free; zero-result queries free
+  monthly_cap_per_user_min: 2000
+  monthly_cap_per_user_max: 10000
+  cap_note: >-
+    The per-user monthly cap depends on the subscription plan and typically ranges from 2K to
+    10K credits. When the cap is hit, access resumes automatically at the next monthly reset.
+  top_up: '"Request for More Credits" button on the MCP credit usage page'
+  usage_page: https://platform.tracxn.com/a/s/manage/t/mycredits/t/tracxnmcp
+contract_terms:
+  data_deletion: >-
+    Deletion of data at the end of the subscription period is a mandatory compliance
+    requirement under Tracxn's Master Services Agreement.
+  terms: https://tracxn.com/termsofuse
+contacts:
+  api_desk: apidesk@tracxn.com
+  support: support@tracxn.com
+  pricing_page: https://tracxn.com/pricing

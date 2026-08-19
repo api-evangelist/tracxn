@@ -1,0 +1,165 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  Anonymous probes of /.well-known/* on every Tracxn host reachable from apis.yml
+  (tracxn.com, platform.tracxn.com, w.tracxn.com, help.tracxn.com, docs.tracxn.com),
+  performed 2026-08-14. The two 200s that carry real documents were discovered from the
+  RFC 9728 `WWW-Authenticate: Bearer realm="mcp", resource_metadata=...` challenge
+  returned by the live Tracxn MCP server at https://platform.tracxn.com/mcp.
+description: >-
+  Tracxn serves exactly two genuine /.well-known/ documents, and both are scoped to the
+  MCP server rather than to the platform as a whole: the RFC 9728 protected-resource
+  metadata and the RFC 8414 authorization-server metadata, each under the /mcp suffix.
+  Every unsuffixed /.well-known/ path 404s. This is the standard MCP OAuth discovery
+  pair, and it is what makes the Tracxn MCP server callable by a generic MCP client
+  without any Tracxn-specific configuration beyond the URL.
+hosts:
+  - host: https://platform.tracxn.com
+    documents:
+      - path: /.well-known/oauth-protected-resource/mcp    # RFC 9728
+        status: 200
+        type: application/json
+        file: tracxn-oauth-protected-resource-mcp.json
+        real: true
+        note: >-
+          resource https://platform.tracxn.com/mcp; scopes_supported ["read"];
+          authorization_servers ["https://platform.tracxn.com/mcp"].
+      - path: /.well-known/oauth-authorization-server/mcp   # RFC 8414
+        status: 200
+        type: application/json
+        file: tracxn-oauth-authorization-server-mcp.json
+        real: true
+        note: >-
+          issuer https://platform.tracxn.com/mcp; authorization_code grant with PKCE
+          S256; dynamic client registration at /auth/2.0/mcp/register;
+          token_endpoint_auth_methods_supported ["none"] (public clients).
+      - path: /.well-known/oauth-protected-resource
+        status: 403
+        real: false
+        note: >-
+          Unsuffixed path falls through to the platform API catch-all, which answers
+          every unmatched /api-style path with {"errorCode":403000000,"message":"Invalid
+          web session access. No user."}. Not a discovery document.
+      - path: /.well-known/oauth-authorization-server
+        status: 403
+        real: false
+        note: Same platform catch-all as above.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/openid-configuration/mcp
+        status: 404
+        note: Tracxn's MCP auth server is OAuth 2.1, not OpenID Connect.
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+  - host: https://tracxn.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+  - host: https://w.tracxn.com
+    note: >-
+      Webflow-hosted marketing site. Answers every /.well-known/* path with a 404 and the
+      body "Invalid .well-known request".
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+      - path: /llms.txt
+        status: 404
+  - host: https://help.tracxn.com
+    note: >-
+      Tracxn's help centre is a CNAME onto Intercom's infrastructure. Its /llms.txt is a
+      real, Tracxn-content document (saved) and is the ONLY llms.txt anywhere on the
+      estate. Its /.well-known/security.txt is NOT Tracxn's — see ownership note below.
+    documents:
+      - path: /llms.txt
+        status: 200
+        type: text/plain
+        file: ../llms/tracxn-help-center-llms.txt
+        real: true
+        note: >-
+          394 lines, Intercom-generated index of the Tracxn Help Center, linking every
+          article with a machine-readable .md twin. Carries the whole Tracxn MCP and API
+          documentation set, which is the only public API reference outside Postman.
+      - path: /.well-known/security.txt
+        status: 200
+        type: text/plain
+        real: false
+        saved: false
+        ownership: intercom
+        note: >-
+          NOT TRACXN'S. Body is verbatim Intercom's own security.txt — "# Intercom -
+          reporting security vulnerabilities to Intercom", Contact
+          https://bugcrowd.com/intercom and mailto:security@intercom.com, and it declares
+          Canonical: https://app.intercom.com/.well-known/security.txt. It is served
+          because help.tracxn.com is a CNAME onto Intercom, and it names Intercom's
+          vulnerability programme, not Tracxn's. Recorded as a miss and NOT saved; no
+          SecurityTxt pointer is emitted for Tracxn on the strength of another vendor's
+          document.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://docs.tracxn.com
+    note: >-
+      Resolves and answers HTTP 200 with the Tracxn platform single-page-app shell for
+      EVERY path, including nonexistent ones. No path here is a document; all 200s below
+      are the SPA catch-all and are recorded as misses.
+    documents:
+      - path: /.well-known/agent-card.json
+        status: 200
+        real: false
+        note: SPA index.html fallback, not an AgentCard.
+      - path: /.well-known/security.txt
+        status: 200
+        real: false
+        note: SPA index.html fallback.
+      - path: /llms.txt
+        status: 200
+        real: false
+        note: SPA index.html fallback.
+      - path: /openapi.json
+        status: 200
+        real: false
+        note: SPA index.html fallback, not an OpenAPI.
+summary:
+  real_documents: 3
+  hosts_probed: 5
+  pointer_emitted: WellKnown
+  security_txt_pointer_emitted: false
+  security_txt_reason: >-
+    The only security.txt reachable on the estate belongs to Intercom and declares an
+    Intercom canonical URL. Tracxn serves none of its own.
+  agent_card_found: false

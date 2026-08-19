@@ -1,56 +1,154 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
 source: >-
-  https://w.tracxn.com/api-developers-page ; official Postman workspace
-  https://www.postman.com/tracxnapi/tracxn-api ; live probes of
-  https://platform.tracxn.com/api/2.2 (405 on GET, 403 JSON envelope on
-  unauthenticated POST, 2026-07-21) ; public v2.2 client implementations
+  "Request Body Structure", "Rate Limits" and "Response Codes" sections of the Tracxn API Guide,
+  published in the official public Postman workspace
+  (https://www.postman.com/tracxnapi/tracxn-api), saved at
+  postman/tracxn-api-production.postman.json — plus the 42 published request bodies in that
+  collection ; https://help.tracxn.com/en/articles/11142752-faqs-on-api-response ;
+  https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis ;
+  live probes of https://platform.tracxn.com/api/2.2 (2026-08-14)
 description: >-
-  Cross-cutting request/response semantics of the Tracxn API v2.2. Tracxn
-  publishes no public OpenAPI; these conventions are captured from the public
-  developer page, the official Postman workspace and live probes. The API is
-  query-by-POST: every endpoint (companies, investors, transactions,
-  acquisitiontransactions) accepts a JSON body carrying filter criteria
-  (e.g. feedName) and result-size controls, and GET is rejected with 405.
-base_url: https://platform.tracxn.com/api/2.2
-api_style: JSON-over-HTTPS, POST query endpoints with filter bodies
+  Cross-cutting request/response semantics of the Tracxn API. Tracxn publishes no OpenAPI, but it
+  does publish a consistent, uniform contract: every data endpoint is a POST that takes the same
+  four-key body — filter, sort, from, size — and returns entities. There are no path parameters,
+  no query strings and no GET; the resource is chosen by URL and everything else is expressed in
+  the body. That uniformity is the API's strongest property for an agent, because one request
+  shape generalises across all 35 endpoints. Its weakest is the runtime signalling: no rate-limit
+  headers, no request-id, no idempotency contract and no problem+json.
+base_url: https://platform.tracxn.com/api/3.0
+base_url_legacy: https://platform.tracxn.com/api/2.2
+api_style: JSON-over-HTTPS, uniform query-by-POST with a filter body
 authentication:
-  scheme: apiKey in lowercase `accesstoken` header
+  scheme: apiKey in the `accessToken` request header (REST); OAuth 2.1 + PKCE (MCP)
   detail: authentication/tracxn-authentication.yml
 request_model:
   method: POST
+  methods_rejected:
+    GET: 405 Method Not Allowed
   content_type: application/json
-  body:
-    filter: 'criteria object (e.g. {"feedName": ["Cybersecurity"]})'
-    size: number of results to return (max 20 per request in Playground)
+  body_contract:
+    filter:
+      required: true
+      description: 'Filter criteria object for the entity being queried, e.g. {"feedName": ["Cybersecurity"]}'
+      type: object
+    sort:
+      required: false
+      description: >-
+        Defines result ordering. Sortable attributes are listed per-endpoint under "Sorts
+        applicable" in the Postman reference.
+      type: object
+    from:
+      required: false
+      default: 0
+      description: Zero-based offset for pagination.
+      type: integer
+    size:
+      required: false
+      default: 20
+      maximum: 20
+      description: Number of entities per response. The default IS the maximum.
+      type: integer
+  example_filters:
+    - '{"filter": {"practiceAreaId": ["5409cb72e4b0efef66413044"], "country": ["India"], "companyStage": ["Funded"]}}'
+    - '{"filter": {"companyId": ["685d395b56851c1154788da6"]}, "from": 0}'
+  filter_guidance:
+    - >-
+      For sector/industry filtering Tracxn recommends `feedName` over `feedId` or `practiceArea`
+      when generating a payload.
+    - >-
+      For practice areas the correct key is `practiceArea`; an unrecognised key returns an
+      InvalidField error.
+    - Up to 500 company IDs may be passed per request to the Enrichment and News APIs.
+    - Date filters exist for event dates (funding round date, news date), not for record mutation.
+pagination:
+  style: offset
+  params:
+    offset: from
+    limit: size
+  default_page_size: 20
+  max_page_size: 20
+  cursor: false
+  total_count: not documented
+  note: >-
+    `size` cannot exceed 20, so pagination is mandatory for any result set larger than 20 and a
+    caller walks it by incrementing `from`. Because credits are charged per entity RETURNED,
+    credits are consumed in multiples of 20 as pages are fetched — pagination is a billing event,
+    not just a transport detail.
+sorting:
+  param: sort
+  reference: Per-endpoint "Sorts applicable" section in the Postman documentation
 versioning:
   scheme: uri-path
-  current: '2.2'
-  example: /api/2.2/companies
+  current: '3.0'
+  previous: '2.2'
+  previous_status: announced for deprecation
+  example: /api/3.0/companies
   detail: lifecycle/tracxn-lifecycle.yml
 environments:
-  production: https://platform.tracxn.com/api/2.2
+  production: https://platform.tracxn.com/api/3.0
+  production_legacy: https://platform.tracxn.com/api/2.2
   playground: https://platform.tracxn.com/api/2.2/playground
+  token_isolation: Tokens are environment-specific and must not be reused across environments.
   detail: sandbox/tracxn-sandbox.yml
 error_envelope:
   shape:
-    errorCode: numeric (e.g. 403000000)
+    errorCode: numeric (e.g. 403000000; also the non-HTTP application code 900)
     message: human-readable string
-  format: custom JSON (not RFC 9457 problem+json)
+  format: custom JSON (not RFC 9457 application/problem+json)
+  media_type: application/json
   detail: errors/tracxn-problem-types.yml
+response_model:
+  sparse_fields: >-
+    Data points that are unavailable are OMITTED from the response rather than returned as null,
+    deliberately, to reduce payload size. Clients must treat missing keys as normal.
+  field_selection: >-
+    The field set returned is fixed by the customer's subscription configuration, not chosen
+    per-request — there is no `fields`/`expand` parameter.
+  freshness: The Companies API returns `lastUpdatedDate` per record.
+  entity_ids: >-
+    24-character hexadecimal object IDs (e.g. 685d395b56851c1154788da6) used across companyId,
+    practiceAreaId, feedId. Resolve a domain to an ID with the MCP resolve_entities tool or by
+    filtering /companies on domain.
 rate_limiting:
-  signal: HTTP 429 on exceeded quota
-  playground_caps: 100/hour, 1000/day (see sandbox/tracxn-sandbox.yml)
+  signal: HTTP 429 (Too Many Requests)
+  headers: none documented
+  retry_after: not returned
+  production: 100/second, 1,000/minute, 10,000/hour, 100,000/day
+  playground: 100/hour, 1,000/day
+  key_metrics_endpoints: 10/hour, 100/day
+  credit_exhaustion: HTTP 403 with message "API out of credits" (application code 900)
+  detail: rate-limits/tracxn-rate-limits.yml
 idempotency:
   supported: false
+  header: null
   note: >-
-    No idempotency-key header or contract is documented; the query endpoints
-    are read-only lookups, so replay safety is inherent to the surface.
-pagination:
-  style: size-bounded result window
-  params:
-  - size
+    No idempotency-key header or contract is documented, and none is needed for correctness: every
+    published endpoint is a read-only query, so replaying a request cannot create a duplicate. It
+    is NOT free to replay, however — a repeated call re-returns entities and can re-consume
+    credits, so retries are a billing risk even though they are a semantic no-op. No Idempotency
+    pointer is emitted, because there is no idempotency mechanism to point at.
+request_tracing:
+  request_id_header: none documented
   note: >-
-    Public client code passes `size` (and windows results in batches of up to
-    20); the full pagination contract (offset/from cursors) is documented
-    behind the platform login and is not restated here.
+    No request-id or correlation header is documented or observed. Tracxn's own troubleshooting
+    guidance asks users to send a screenshot and the exact error message, which is the practical
+    consequence of having no request identifier to quote.
+caching:
+  documented: false
+  note: No cache-control, ETag or conditional-request contract is documented.
+events:
+  webhooks: false
+  server_push: false
+  asyncapi: false
+  statement: >-
+    "Currently, Tracxn does not support server-side push or webhooks. However, this feature is part
+    of our product roadmap." — https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis
+  consequence: >-
+    Change detection is poll-only. The supported pattern is to poll with date filters on event
+    dates and to read `lastUpdatedDate` on company records. No Webhooks or AsyncAPI pointer is
+    emitted — the provider states plainly that the surface does not exist.
+agent_surface:
+  mcp: https://platform.tracxn.com/mcp
+  detail: mcp/tracxn-mcp.yml
+  crosswalk: mcp/tracxn-tool-crosswalk.yml

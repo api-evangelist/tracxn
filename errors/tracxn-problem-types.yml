@@ -1,35 +1,124 @@
-generated: '2026-07-21'
-method: probed
+generated: '2026-08-14'
+method: searched
 source: >-
+  "Response Codes" table of the Tracxn API Guide, published verbatim in both official public
+  Postman collections (https://www.postman.com/tracxnapi/tracxn-api), saved at
+  postman/tracxn-api-production.postman.json and postman/tracxn-api-playground.postman.json ;
+  https://help.tracxn.com/en/articles/11142749-faqs-on-api-credits (403 "API out of credits") ;
+  https://help.tracxn.com/en/articles/11142752-faqs-on-api-response (InvalidField error) ;
   live probes of https://platform.tracxn.com/api/2.2/companies and
-  https://tracxn.com/api/2.2/companies (2026-07-21) ; error handling in
-  public v2.2 clients (429 rate-limit handling)
+  https://platform.tracxn.com/mcp (2026-08-14)
 format: custom
 description: >-
-  Error surface of the Tracxn API v2.2 as observed live and handled by public
-  clients. Tracxn publishes no public error-code registry; errors are
-  returned as a custom JSON envelope with a long numeric errorCode and a
-  message string (not RFC 9457 application/problem+json). The numeric codes
-  appear to extend the HTTP status (e.g. 403000000 for an authentication
-  failure). The authoritative registry, if any, sits behind the platform
-  login.
+  Tracxn DOES publish an error-code table — it lives in the API Guide inside the public Postman
+  workspace rather than on a docs site, which is why earlier passes recorded it as absent.
+  Errors are a custom JSON envelope of {errorCode, message}, not RFC 9457 application/problem+json.
+  Two things make this catalogue unusual and are worth an integrator's attention: the numeric
+  errorCode is a NINE-DIGIT extension of the HTTP status (403 -> 403000000), and the published
+  table includes a code 900 that is NOT an HTTP status at all — it is an application-level
+  "Credit Limit Exceeded" signal delivered inside a 403 response. A client that switches on the
+  HTTP status alone cannot distinguish "your token is bad" from "you are out of money", and
+  those need opposite handling: one is a config error, the other is non-retryable until billing
+  is renewed.
 envelope:
-  errorCode: numeric error code (e.g. 403000000)
+  errorCode: numeric application error code (e.g. 403000000)
   message: human-readable description
+  media_type: application/json
+  rfc9457: false
+error_code_convention: >-
+  Observed codes are the HTTP status followed by six digits of sub-code
+  (403000000 = 403 auth failure; 404001000 = 404 resource not found on requested domain).
+  Tracxn does not publish the sub-code registry.
 problems:
-- status: 403
-  errorCode: 403000000
-  message: Invalid web session access. No user.
-  cause: Request without a valid `accesstoken` header
-  remediation: Send a valid access token in the lowercase `accesstoken` header
-  observed: live probe 2026-07-21
-- status: 405
-  title: Method Not Allowed
-  cause: GET request to a query endpoint; the v2.2 API is POST-only
-  remediation: Use POST with a JSON filter body
-  observed: live probe 2026-07-21
-- status: 429
-  title: Rate limit exceeded
-  cause: Playground/production request quota exceeded
-  remediation: Back off and retry after the quota window; see sandbox/tracxn-sandbox.yml
-  observed: handled explicitly by public API clients
+  - status: 200
+    title: Success
+    meaning: Request completed successfully
+    source: published response-code table
+  - status: 400
+    title: Bad Request
+    meaning: Syntax of query is invalid
+    cause: Malformed filter/sort/from/size body
+    remediation: Validate the JSON body against the four documented parameters; see conventions/tracxn-conventions.yml
+    source: published response-code table
+  - status: 401
+    title: Authentication Issue
+    meaning: Token missing or invalid
+    remediation: Send a valid token in the `accessToken` header; confirm you are using the token for the right environment
+    source: published response-code table
+  - status: 403
+    title: Unauthorized
+    meaning: Token expired or access denied
+    errorCode: 403000000
+    message: Invalid web session access. No user.
+    cause: Request without a valid `accessToken` header, expired token, or entitlement denial
+    remediation: Regenerate the token at https://platform.tracxn.com/a/api/apitoken; confirm the subscription covers the dataset
+    observed: live probe 2026-08-14
+    note: >-
+      Also returned as a CATCH-ALL for any unmatched path under /api/, so a 403 is not proof
+      that the endpoint you called exists.
+  - status: 403
+    title: Credit Limit Exceeded
+    errorCode: 900
+    message: API out of credits
+    meaning: Credit Limit Exceeded — Contact support to renew
+    cause: The account's API credit allocation is exhausted (1 credit per entity returned)
+    remediation: >-
+      NON-RETRYABLE. Contact Tracxn support to renew credits; check the balance at
+      https://platform.tracxn.com/a/api/productionenvironment/creditdetails
+    source: published response-code table + FAQs on API Credits
+    note: >-
+      Published in the code table as "900", but delivered over HTTP 403. Distinguish it from an
+      auth 403 by the errorCode/message, not the status.
+  - status: 404
+    title: Not Found
+    meaning: Endpoint does not exist
+    errorCode: 404001000
+    message: Resource not found on requested domain
+    observed: live probe 2026-08-14
+    source: published response-code table
+  - status: 405
+    title: Method Not Allowed
+    meaning: Use the correct HTTP method (GET or POST)
+    cause: GET against a query endpoint; the data endpoints are POST-only
+    remediation: Use POST with a JSON filter body
+    observed: live probe 2026-08-14
+    source: published response-code table
+  - status: 429
+    title: Rate Limit Exceeded
+    meaning: Slow down requests
+    cause: Request-rate ceiling breached for the environment or for the Key Metrics endpoint class
+    remediation: >-
+      Back off for the smallest breached window and retry. NO Retry-After or X-RateLimit-*
+      header is returned, so the client must track its own budget. See rate-limits/tracxn-rate-limits.yml
+    source: published response-code table
+  - status: 500
+    title: Internal Server Error
+    meaning: Try again later
+    remediation: Retry with backoff
+    source: published response-code table
+    observed: >-
+      Live probe 2026-08-14 — an unauthenticated MCP `tools/list` returns a bare text/plain 500
+      from uvicorn where a 401 challenge would be correct. Reported here as a real observation.
+  - status: 401
+    title: MCP Authorization Required
+    surface: mcp
+    body:
+      error: Unauthorized
+      message: Authorization required
+    www_authenticate: Bearer realm="mcp", resource_metadata="https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp"
+    remediation: Complete the OAuth flow; see authentication/tracxn-authentication.yml
+    observed: live probe 2026-08-14
+application_errors:
+  - name: InvalidField
+    surface: rest
+    cause: The request body contains a field the API does not recognise
+    remediation: >-
+      Check the supported field list in the Postman reference. Tracxn calls out the common case
+      explicitly: for practice areas the correct filter key is `practiceArea`, and `feedName` is
+      preferred over `feedId` or `practiceArea` when filtering by sector.
+    source: https://help.tracxn.com/en/articles/11142752-faqs-on-api-response
+missing_data_behaviour: >-
+  Not an error condition: if a data point is unavailable it is simply OMITTED from the response
+  rather than returned as null, deliberately, to reduce payload size. Clients must treat absent
+  keys as normal and must not infer failure from them. Likewise a query matching nothing returns
+  no entities and consumes no credits.

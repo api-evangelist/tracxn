@@ -1,39 +1,97 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
 source: >-
-  https://www.postman.com/tracxnapi/tracxn-api/folder/jlyqobh/api-version-2-2-playground
-  (official Postman workspace, "API Version 2.2 Playground" folder) ;
-  https://w.tracxn.com/api-developers-page ; playground caps as recorded by
-  public API clients (e.g. github.com/HXMAN76/Lumen-VC tracxn_client.py) —
-  authoritative numbers live behind the platform login
+  "TracxnAPI Playground" collection in the official public Postman workspace
+  (https://www.postman.com/tracxnapi/tracxn-api), saved verbatim at
+  postman/tracxn-api-playground.postman.json — its Playground Overview, Access & Usage
+  Guidelines, Rate Limits and endpoint list ;
+  https://help.tracxn.com/en/articles/11142749-faqs-on-api-credits ;
+  https://platform.tracxn.com/a/api/playground/about
 description: >-
-  Tracxn ships a dedicated Playground environment for evaluating the API
-  without a production data license. The Playground mirrors the v2.2 endpoint
-  surface under a /playground path prefix, uses its own access token (issued
-  in the platform under Data Solutions > API & Developer Tools > Playground >
-  API Token), and is scoped to a single feed (Cybersecurity) for testing.
-  Documented request caps for the Playground are 100 requests/hour and 1,000
-  requests/day, with up to 20 results per request; exceeding them returns
-  HTTP 429. No magic test entities beyond the restricted feed are published.
+  Tracxn ships a genuine free sandbox — the Playground — and describes it in its own words as "a
+  free, fully-featured platform meant for safe testing of prototypes and integrations". It is a
+  real evaluation surface rather than a mock: the same code path, the same request/response
+  contract, real Tracxn data, and no credit consumption. What is narrowed is BREADTH, not
+  fidelity: the dataset is restricted to the Cybersecurity feed and the call budget is small.
+  Commercial use is explicitly prohibited. There are no magic test entities, fixtures, test
+  clocks or seeded records — the sandbox is a scoped slice of production data, so the way to
+  "test" is to query real cybersecurity companies.
 environments:
   production:
-    base_url: https://platform.tracxn.com/api/2.2
-    token: production access token (accesstoken header)
+    base_url: https://platform.tracxn.com/api/3.0
+    legacy_base_url: https://platform.tracxn.com/api/2.2
+    token: production access token (accessToken header)
+    token_page: https://platform.tracxn.com/a/api/productionenvironment/apitoken
+    credits: consumed (1 per entity returned)
   playground:
     base_url: https://platform.tracxn.com/api/2.2/playground
-    token: playground access token (accesstoken header)
+    token: playground access token (accessToken header)
+    token_page: https://platform.tracxn.com/a/api/playground/about
+    about_page: https://platform.tracxn.com/a/api/playground/about
+    credits: not consumed
+    price: free
     scope: Cybersecurity feed only
+    commercial_use: prohibited
+    token_required: true
     rate_limits:
       per_hour: 100
       per_day: 1000
+      key_metrics_per_hour: 10
+      key_metrics_per_day: 100
       max_results_per_request: 20
+token_isolation: >-
+  Tokens are environment-specific and Tracxn warns explicitly: "Do not reuse between Playground
+  and Production." A production token will not work against the /playground prefix and vice versa.
+included_datasets:
+  - Cybersecurity feed
+  - All companies, funding rounds, acquisitions, investors (within that feed)
+  - Sectors including Practice Areas, Feeds and Business Models
 endpoints:
-- /companies
-- /investors
-- /transactions
-- /acquisitiontransactions
+  v2_2:
+    - POST /api/2.2/playground/companies
+    - POST /api/2.2/playground/companies/search
+    - POST /api/2.2/playground/transactions
+    - POST /api/2.2/playground/investors
+    - POST /api/2.2/playground/acquisitiontransactions
+  v3_0_key_metrics:
+    - POST /api/3.0/companies/metric
+    - POST /api/3.0/fundingrounds/metric
+    - POST /api/3.0/investors/metric
+    - POST /api/3.0/acquisitions/metric
+  v3_0_key_metrics_note: >-
+    The Playground collection's v3.0 section contains ONLY the four Key Metrics aggregation
+    endpoints — the v3.0 entity-search endpoints (/companies, /fundingrounds, /acquisitions,
+    /ipos, /timeseries/*) are not exposed under a playground path. A developer evaluating the
+    CURRENT major version therefore cannot exercise most of it for free, even though v2.2 is
+    the version being deprecated. That is the notable gap in this sandbox.
+path_anomaly:
+  observed: POST https://platform.tracxn.com/api/3.0/playground/timeseries/cashflowfinancingactivity
+  note: >-
+    One request in the PRODUCTION collection ("Net Cash from Financial Activities") carries a
+    /playground/ segment while its ten sibling time-series requests do not. Recorded as published;
+    it looks like a copy-paste slip in Tracxn's collection rather than a real production path.
+test_data:
+  magic_values: none
+  test_cards: n/a
+  fixtures: none
+  test_clocks: false
+  note: >-
+    No synthetic test entities are published. Sandbox testing uses real records from the
+    Cybersecurity feed. Tracxn's suggested smoke test for the MCP surface is the natural-language
+    equivalent — "find Razorpay on Tracxn" — to isolate connectivity from query problems.
+trial:
+  distinct_from_sandbox: true
+  duration_days: 5-7
+  description: >-
+    Separate from the Playground: a sales-arranged 5-7 day Proof of Concept with limited credits
+    against selected APIs (Companies, Funding, Acquisitions, Investors, Time Series). Full
+    production access is not included and trial tokens are revoked when it ends.
+  detail: plans/tracxn-plans-pricing.yml
 notes:
-- The Playground and production environments use the same request/response
-  contract; only the path prefix, token, feed scope and rate caps differ.
-- Rate-limit and endpoint details are documented in Tracxn's official Postman
-  workspace; the in-platform API docs sit behind the login.
+  - >-
+    Playground and production share one request/response contract; only the path prefix, the
+    token, the feed scope, the credit behaviour and the rate caps differ.
+  - >-
+    The Playground is the only part of Tracxn's programmatic surface reachable without a
+    commercial negotiation, but it still requires a Tracxn account to mint a token — there is no
+    anonymous try-it.

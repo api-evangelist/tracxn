@@ -1,0 +1,641 @@
+{
+ "id": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+ "name": "TracxnAPI Playground",
+ "owner": "46732225",
+ "lastUpdatedBy": "46732225",
+ "lastRevision": 43741185098,
+ "team": "8828900",
+ "description": "# Tracxn API Guide\n\nWelcome to the Tracxn API guide. This document walks you through use cases, setup, and best practices for accessing the Tracxn API. It will help you:\n\n- Build and refine queries\n    \n- Explore structured API responses\n    \n- Use the Playground for safe testing\n    \n\n---\n\n## Playground Overview\n\nThe Tracxn Playground API is a free, fully-featured platform meant for safe testing of prototypes and integrations.\n\nYou\u2019ll get access to:\n\n- Cybersecurity feed\n    \n- All companies, funding rounds, acquisitions, investors\n    \n- Sectors including Practice Areas, Feeds, and Business Models\n    \n\n---\n\n## Access & Usage Guidelines\n\n- API Token is mandatory\n    \n- The Playground is strictly for testing only\n    \n- Commercial use is prohibited for Playground API\n    \n\n---\n\n## Request Body Structure\n\nThe request body should include the following four parameters:\n\n- `filter`: Your filter criteria (e.g., Companies, Transactions, etc.)\n    \n- `sort`: Define how results should be sorted\n    \n- `from`: Offset for pagination (default: 0)\n    \n- `size`: Number of entities per response (default and maximum: 20)\n    \n\n---\n\n## Generating API Tokens (Playground)\n\nTo get started with the APIs, generate your environment-specific API tokens:\n\n- **Step 1: Log in**\n    \n    Log in to your Tracxn account\n    \n- **Step 2: Generate Playground Token**\n    \n    Navigate to:\n    \n    Data Solutions > API & Developer Tools > Playground > API Token\n    \n    Click on \"Generate API Token\"\n    \n- Important: Tokens are environment-specific. Do not reuse between Playground and Production\n    \n\n---\n\n## Rate Limits\n\n**Playground Environment**\n\n- 100 API calls per hour\n    \n- 1,000 API calls per day\n    \n\n**Key Metrics APIs**\n\n- 10 API calls per hour\n    \n- 100 API calls per day\n    \n\nNote: Limits may change without prior notice.\n\nIf you exceed the limit, you\u2019ll receive HTTP 429 - Too Many Requests.\n\n---\n\n## Response Codes\n\n| Status Code | Meaning |\n| --- | --- |\n| 200 | Success \u2013 Request completed successfully |\n| 400 | Bad Request \u2013 Syntax of query is invalid |\n| 401 | Authentication Issue \u2013 Token missing or invalid |\n| 403 | Unauthorized \u2013 Token expired or access denied |\n| 404 | Not Found \u2013 Endpoint does not exist |\n| 405 | Method Not Allowed \u2013 Use the correct HTTP method (GET or POST) |\n| 429 | Rate Limit Exceeded \u2013 Slow down requests |\n| 500 | Internal Server Error \u2013 Try again later |\n| 900 | Credit Limit Exceeded \u2013 Contact support to renew |\n\n---\n\n## Deprecation Notice\n\n- API Version 2.2 will be deprecated soon\n    \n- Please migrate to Version 3.0 to ensure continued support and access to new features",
+ "variables": null,
+ "auth": null,
+ "events": null,
+ "remote_id": "0",
+ "remoteLink": null,
+ "folders_order": [
+  "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+  "6b25a611-e2d1-4983-aa19-bd65fc85f63a"
+ ],
+ "order": [],
+ "createdAt": "2025-07-14T09:47:58.000Z",
+ "updatedAt": "2025-07-14T12:03:52.000Z",
+ "folders": [
+  {
+   "id": "221d89c9-9998-4af3-8bf6-7f05b1d54798",
+   "name": "Company Name Search",
+   "description": "# Companies Name Search API (Version 2.2)\n\nThe **Companies Name Search API** enables you to search for companies by their name and receive matching company IDs and domains in the response.\n\nYou can then use these IDs or domains with the [Companies API](https://platform.tracxn.com/api/2.2/companies) to fetch detailed company data.\n\n---\n\n## Request Details\n\n| Field | Value |\n| --- | --- |\n| **Playground URL** | `https://platform.tracxn.com/api/2.2/playground/companies/search` |\n| **Method** | `POST` |\n| **Headers** | `accessToken`: `[Your Access Token]``Content-Type`: `application/json` |\n\n---\n\n## Sample cURL Request\n\n``` bash\ncurl -X POST \\\n  https://platform.tracxn.com/api/2.2/playground/companies/search\\\n  -H 'accesstoken: [access-token-given-by-tracxn]' \\\n  -H 'cache-control: no-cache' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n        \"filter\": {\n            \"companyName\": [\"apple\"]\n        }\n    }'\n\n ```\n\n---\n\n## Sample Request Body (Filter)\n\n``` json\n{\n  \"filter\": {\n    \"companyName\": [\"apple\"]\n  }\n}\n\n ```\n\n---\n\n## Request Body\n\n- `filter` \u2013 Search criteria for matching company names.\n    \n\n### Company Name Filter (Required)\n\n| Filter | Sample Value |\n| --- | --- |\n| companyName | `\"apple\"` |\n\n---\n\n## Notes\n\n1. The `companyName` filter is **mandatory**.\n    \n2. Only **one value** can be passed at a time.\n    \n3. Only **top 10 results** sorted by relevance will be returned.\n    \n4. `from` and `size` parameters are **not applicable** for this endpoint.\n    \n\n---\n\n## Output Keys\n\n| Field | Type | Description |\n| --- | --- | --- |\n| id | string | Unique company ID in the Tracxn database |\n| name | string | Name of the company |\n| domain | string | Normalized domain name of the company |",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43739922903,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "order": [
+    "adae7ffb-2335-430e-8d7e-4cdd27a7edd4"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T11:04:09.000Z"
+  },
+  {
+   "id": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "name": "API Version 2.2 Playground",
+   "description": "# Welcome to Tracxn API Playground\n\nTracxn Playground API is a free and fully-featured environment that allows you to safely test prototypes and integrations.\n\nThe playground API gives you access to the Cybersecurity feed and all the companies, funding rounds, acquistions, investors, sectors (Practice Area/Feed/Business Models) under it. [Try Now](https://platform.tracxn.com/a/api/tester)\n\nTo access Playground API, you require an API access token. [Click here](https://platform.tracxn.com/a/api/playground/apitoken) to generate/view your token.\n\n**Playground API vs Production Environment**\n\nAPIs in the Playground API match those in production - all filters, sorts are supported and it returns the same API response, making it easy to move into the production phase.\n\nAfter the testing/integration is complete, you only need to change the endpoint URL from the Playground to Production endpoint:  \neg. For Companies API, change from [https://platform.tracxn.com/api/2.2/playground/companies/](https://platform.tracxn.com/api/2.2/playground/companies/) to [https://platform.tracxn.com/api/2.2/companies/](https://platform.tracxn.com/api/2.2/companies/)\n\n|  | Playground | Production |\n| --- | --- | --- |\n| Endpoint | eg. [https://platform.tracxn.com/api/2.2/playground/companies](https://platform.tracxn.com/api/2.2/playground/companies), [https://platform.tracxn.com/api/2.2/playground/investors](https://platform.tracxn.com/api/2.2/playground/investors) etc. | Remove /playground from Playground Endpoint  <br>eg. [https://platform.tracxn.com/api/2.2/companies](https://platform.tracxn.com/api/2.2/companies) [https://platform.tracxn.com/api/2.2/investors](https://platform.tracxn.com/api/2.2/investors) etc. |\n| Token |  |  |\n| Filters | All filters are applied on Companies, Transactions etc which are tagged to Cybersecurity feed. eg. Passing company funding filter \"totalMoneyRaised\": {\"min\":2000000, \"max\":20000000} (with no feedName filter) will return all Companies/Transactions/Acquisitions under Cybersecurity feed that have raised funding between $2M and $20M.  <br>  <br>eg. Passing sector filter \"feedName\": \\[\"HRTech\"\\] will return all Companies/Transactions/Investors etc under Cybersecurity feed that are also tagged to \"HRTech\" feed. | All filters are applied to the global set of all Companies/Transaction etc available on platform. |",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43739552957,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": null,
+   "order": [],
+   "folders_order": [
+    "5d82f36a-5684-4323-a7c6-1d77eb95dda2",
+    "221d89c9-9998-4af3-8bf6-7f05b1d54798",
+    "47cad1c3-e562-4dd5-acb3-313f319ac9fe",
+    "55d9f7ad-3ec9-4508-bb44-398e467460e1",
+    "6a071de2-a060-48a1-a6b7-0300a65aba7b"
+   ],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:50:06.000Z"
+  },
+  {
+   "id": "47cad1c3-e562-4dd5-acb3-313f319ac9fe",
+   "name": "Transaction",
+   "description": "# Transactions API\n\nThe Transactions API allows you to query the Transaction (Funding Rounds) Database and apply multiple filters and sorts.\n\n---\n\n## Request Details\n\n### URL (Playground)\n\n`https://platform.tracxn.com/api/2.2/playground/transactions`  \n_(Know more about Playground API)_\n\n### Method\n\n`POST`\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Body (Payload)\n\n| Key | Description |\n| --- | --- |\n| `filter` | Criteria by which you want to filter Transactions (Funding Rounds) |\n| `sort` | Criteria to sort the Transactions |\n| `from` | Pagination offset (default = 0) |\n| `size` | Number of results per response (default and max = 20) |\n\n---\n\n## Sample cURL Request\n\n``` bash\ncurl -X POST \\\nhttps://platform.tracxn.com/api/2.2/transactions \\\n-H 'accesstoken: [access-token-given-by-tracxn]' \\\n-H 'cache-control: no-cache' \\\n-H 'Content-Type: application/json' \\\n-d '{\n  \"filter\": {\n    \"transactionFundingRoundDate\": {\n      \"min\": \"01/01/2018\",\n      \"max\": \"30/01/2018\"\n    }\n  },\n  \"sort\": [\n    {\n      \"sortField\": \"transactionFundingRoundAmount\"\n    }\n  ]\n}'\n\n ```\n\n---\n\n## Filters Applicable\n\n### Company Filters\n\n| Filter | Sample |\n| --- | --- |\n| `domain` | `[\"tracxn.com\"]` |\n| `companyStage` | `[\"Unfunded\", \"Series A\", \"Late-Stage\"]` |\n| `foundedYear` | `[2008, 2009]` |\n| `partOf` | `[\"tracxn.com\"]` |\n| `domainSuffix` | `[\"com\", \"ai\"]` |\n| `query` | `[\"+Blockchain +Legal\"]` |\n| `firstPublishDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `companiesId` | `[\"nrG5itQu_3voVifgJjj52SGgucwK5dAJUNozT6vhxPw\"]` |\n\n### Funding Round Filters\n\n| Filter | Sample |\n| --- | --- |\n| `transactionFundingRoundCategory` | `[\"Series B\", \"Series C\"]` |\n| `isKeyFundingRound` | `true` |\n| `transactionFundingRoundDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `transactionInvestor` | `{ \"transactionInstitutionalInvestorDomain\": [\"sequoiacap.com\"] }` |\n| `leadRoundFacilitators` | `[\"wellsfargo.com\"]` |\n| `transactionInvestorFeedName` | `[\"Venture Capital Funds\"]` |\n| `roundFacilitators` | `[\"wellsfargo.com\"]` |\n| `leadTransactionInvestor` | \u2014 |\n| `transactionAllInvestorCountryAndCountryGroup` | `[\"India\", \"United States\"]` |\n| `transactionAllInvestorStateAndStateGroup` | `[\"Maharashtra\"]` |\n| `transactionAllInvestorCityAndCityGroup` | `[\"Bengaluru\"]` |\n| `createdDate` | `{ \"min\": \"01/01/2001\", \"max\": \"01/01/2300\" }` |\n\n### Location Filters\n\n| Filter | Sample |\n| --- | --- |\n| `country` | `[\"United States\"]` |\n| `state` | `[\"California\"]` |\n| `city` | `[\"San Francisco\"]` |\n| `continent` | `[\"Asia\"]` |\n| `location` | `{ \"country\": [\"United States\"], \"state\": [\"California\"] }` |\n\n### Funding Filters\n\n| Filter | Sample |\n| --- | --- |\n| `totalMoneyRaised` | `{ \"min\": 2000000, \"max\": 20000000 }` |\n| `investor` | `{ \"domain\": [\"google.com\"] }` |\n| `latestFundingRoundDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `fundingRoundDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n\n### Sector Filters\n\n| Filter | Sample |\n| --- | --- |\n| `specialFlags` | `{ \"consumer\": [\"yes\"], \"saas\": [\"untagged\"] }` |\n| `practiceArea` | `[\"Fintech\"]` |\n| `feedName` | `[\"HRTech\"]` |\n| `businessModel` | \u2014 |\n| `businessModelPath` | `[{ \"feedId\": [\"5b8e5eae...\"], \"businessModel\": [\"533d2b58...\"] }]` |\n\n### Analyst Rating Filters\n\n| Filter | Sample |\n| --- | --- |\n| `editorRating` | `[4, 5]` |\n| `soonicornFlag` | `[\"UNICORN\"]` |\n| `soonicornEventDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `editorRatingUpdatedDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `soonicornMarkedDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n\n### Transaction Filters\n\n| Filter | Sample |\n| --- | --- |\n| `transactionFundingRoundAmount` | `{ \"min\": 1000000, \"max\": 1000000000 }` |\n| `transactionFirstFundingRoundDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `transactionId` | `[\"52fe3238e4b0576112f617a1\"]` |\n\n### Exits Filters\n\n| Filter | Sample |\n| --- | --- |\n| `acquirerDomain` | `[\"google.com\"]` |\n| `acquisitionAmount` | `{ \"min\": 2000000, \"max\": 20000000 }` |\n| `acquisitionType` | `[\"Acqui-Hired\", \"Buyout\"]` |\n| `acquisitionDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `companyAcquirerFeedName` | `[\"SaaS\"]` |\n| `acquirerCountry` | `[\"India\"]` |\n| `acquirerState` | `[\"Karnataka\"]` |\n| `acquirerCity` | `[\"Bengaluru\"]` |\n\n### Metrics Filters\n\n| Filter | Sample |\n| --- | --- |\n| `twitterFollowerGrowthPercent` | `{ \"min\": 2, \"max\": 20 }` |\n| `mobileReviewGrowthPercent` | `{ \"min\": 2, \"max\": 20 }` |\n\n### Discovery Filters\n\n| Filter | Sample |\n| --- | --- |\n| `latestNewsDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n\n> **Note:** \n  \n\n---\n\n## Sorts Applicable\n\n### Funding Round Details\n\n| Sort Field |\n| --- |\n| `transactionFundingRoundAmount` |\n| `transactionFundingRoundDate` |\n| `transactionRoundName` |\n| `transactionFirstFundingRoundDate` |\n| `createdDate` |\n\n### Analyst Rating\n\n| Sort Field |\n| --- |\n| `soonicornEventDate` |\n\n### Discovery\n\n| Sort Field |\n| --- |\n| `latestNewsDate` |\n\n---\n\n## Output Keys\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `type` | string | Type of transaction |\n| `id` | string | Transaction ID |\n| `name` | string | Name of the round (e.g. Series A) |\n| `fundingDate` | object | Date of funding round |\n| `fundingDate.year` | int | Year |\n| `fundingDate.month` | int | Month |\n| `fundingDate.day` | int | Day |\n\n### Company Details\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `companyDetails.name` | string | Company name |\n| `companyDetails.id` | string | Tracxn DB ID |\n| `companyDetails.domain` | string | Company domain |\n\n### News Info\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `newsInfo.latestNews.datePublished` | object | Date of latest news |\n\n### Amount\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `amount` | string | Amount of the funding round |\n| `currency` | string | Currency used |\n\n### Investors\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `investorList` | list | List of participating investors |\n| `investorList[].name` | string | Investor name |\n| `investorList[].domain` | string | Domain of investor |\n| `investorList[].isLead` | string | TRUE if lead investor |\n\n### Facilitators\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `facilitatorsList[]` | list | List of round facilitators |\n| `domain` | string | Facilitator domain |\n| `isLead` | string | TRUE if lead facilitator |\n| `name` | string | Name of facilitator |\n\n### Created Date\n\n| Key | Type |\n| --- | --- |\n| `createdDate.year` | int |\n| `createdDate.month` | int |\n| `createdDate.day` | int |\n| `createdDate.hours` | int |\n| `createdDate.minutes` | int |\n| `createdDate.seconds` | int |\n\n### Post-Money Valuation\n\n| Key | Type | Description |\n| --- | --- | --- |\n| `postMoneyValuation.normalizedAmount.currency` | string | Currency |\n| `postMoneyValuation.normalizedAmount.value` | long | Valuation amount |\n\n---",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43737907173,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "order": [
+    "5641405e-a614-4ae9-8aa2-92b76e135d25"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T09:50:18.000Z"
+  },
+  {
+   "id": "55d9f7ad-3ec9-4508-bb44-398e467460e1",
+   "name": "Investors",
+   "description": "# Investors API\n\nThe Investors API allows you to query Tracxn\u2019s investor database \u2014 including institutional, corporate, and angel investors \u2014 using a wide range of filters and sorts.\n\n---\n\n## Request Details\n\n### URL (Playground)\n\n`https://platform.tracxn.com/api/2.2/playground/investors`  \n_(Know more about Playground API)_\n\n### Method\n\n`POST`\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Body (Payload)\n\n| Key | Description |\n| --- | --- |\n| `filter` | Criteria by which you want to filter Investors |\n| `sort` | Sorting criteria |\n| `from` | Pagination offset (default = 0) |\n| `size` | Number of results per response (default and max = 20) |\n\n---\n\n## Sample Payload\n\n``` json\n{\n  \"filter\": {\n    \"investorCountry\": [\"India\"]\n  }\n}\n\n ```\n\n---\n\n## Sample cURL Request\n\n``` bash\ncurl -X POST \\\nhttps://platform.tracxn.com/api/2.2/playground/investors\\\n-H 'accesstoken: [access-token-given-by-tracxn]' \\\n-H 'cache-control: no-cache' \\\n-H 'Content-Type: application/json' \\\n-d '{\n  \"filter\": {\n    \"investorCountry\": [\"India\"]\n  }\n}'\n\n ```\n\n---\n\n## Filters Applicable\n\n### Investor Filters\n\n| Filter | Sample |\n| --- | --- |\n| `investorDomainName` | `[\"sequoiacap.com\"]` |\n| `investorType` | `[\"Corporate Investors\"]` |\n| `investorFoundedYear` | `[\"2007\", \"2008\"]` |\n| `investorFeedName` | `[\"Venture Capital Funds\"]` |\n| `investorBusinessModelId` | `[\"55a4afb7e4b0c3e220d405ce\"]` |\n| `tracxnInvestmentScore` | `{ \"min\": 70, \"max\": 100 }` |\n\n### Investor Location Filters\n\n| Filter | Sample |\n| --- | --- |\n| `investorCity` | `[\"San Francisco\"]` |\n| `investorState` | `[\"California\"]` |\n| `investorCountry` | `[\"India\", \"United Kingdom\"]` |\n\n### Portfolio Company Filters\n\n| Filter | Sample |\n| --- | --- |\n| `domain` | `[\"domain1.com\", \"domain2.com\"]` |\n| `companyName` | `[\"Grab\"]` |\n| `foundedYear` | `[2008, 2009]` |\n| `companyStage` | `[\"Seed\", \"Series A\", \"Late-Stage Funded\"]` |\n| `teamBackgroundName` | \u2014 |\n| `practiceAreaName` | `[\"Enterprise Applications\"]` |\n| `feedName` | `[\"HRTech\", \"AI in Recruiting\"]` |\n| `businessModelId` | \u2014 |\n| `tracxnScore` | `{ \"min\": 60, \"max\": 100 }` |\n| `companyFundingQuery` | `[\"blockchain\"]` |\n\n### Portfolio Location Filters\n\n| Filter | Sample |\n| --- | --- |\n| `city` | `[\"San Francisco\"]` |\n| `state` | `[\"California\"]` |\n| `country` | `[\"United States\"]` |\n| `location` | `{ \"country\": [\"United States\"], \"state\": [\"California\"], \"city\": [\"San Francisco\"], \"continent\": [\"Asia\"] }` |\n\n### Portfolio Analyst Rating Filters\n\n| Filter | Sample |\n| --- | --- |\n| `specialFlags` | `{ \"consumer\": [\"yes\"], \"saas\": [\"untagged\"] }` |\n| `soonicornFlag` | `[\"UNICORN\"]` |\n| `soonicornEventDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `soonicornMarkedDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n\n### Portfolio Exits Filters\n\n| Filter | Sample |\n| --- | --- |\n| `ipoDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `acquirerDomain` | `[\"google.com\"]` |\n| `acquisitionDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `acquisitionType` | `[\"Acqui-Hired\", \"Business Acquisition\"]` |\n| `companyAcquirerFeedName` | `[\"SaaS\"]` |\n| `acquirerCountry` | `[\"India\", \"United States\"]` |\n\n### Transaction Filters\n\n| Filter | Sample |\n| --- | --- |\n| `transactionFundingRoundCategory` | `[\"Series B\", \"Series C\"]` |\n| `transactionFundingRoundAmount` | `{ \"min\": 1000000, \"max\": 1000000000000 }` |\n| `transactionFundingRoundDate` | `{ \"min\": \"01/01/2016\", \"max\": \"30/06/2016\" }` |\n| `isLeadInvestor` | `true` |\n\n> **Note:** \n  \n\n---\n\n## Output Keys\n\n### Locations\n\n| Path | Type | Description |\n| --- | --- | --- |\n| `locations.city.name` | string | City name |\n| `locations.state.name` | string | State name |\n| `locations.country.name` | string | Country name |\n| `locations.continent.name` | string | Continent name |\n\n### Business Model List\n\n| Path | Type | Description |\n| --- | --- | --- |\n| `businessModelList.name` | string | Name of the business model |\n| `businessModelList.description` | string | Short description of business model |\n| `companiesInEntireTreeUrl` | string | URL for all companies in that node & children |\n| `companiesInNodeOnlyUrl` | string | URL for only companies in that node |\n| `feedName` | string | Feed name |\n| `fullPathList[].name` | string | Name in path |\n| `fullPathList[].type` | string | `FEED` or `BUSINESS_MODEL` |\n| `fullPathString` | string | Entire full path as string |\n\n### Investor Details\n\n| Path | Type | Description |\n| --- | --- | --- |\n| `name` | string | Investor name |\n| `domain` | string | Investor domain |\n| `tracxnId` | string | Tracxn DB ID of the investor |\n| `investorType` | string | Institutional, Corporate, Angel |\n| `description.short` | string | Short description |\n| `description.long` | string | Long description |\n| `tracxnInvestmentScore` | double | Overall investment score |\n\n### Social Profiles (for Angel Investors)\n\n| Path | Type | Platform |\n| --- | --- | --- |\n| `socialProfileList.linkedin` | string | LinkedIn |\n| `socialProfileList.facebook` | string | Facebook |\n| `socialProfileList.twitter` | string | Twitter |\n| `socialProfileList.blog` | string | Blog |\n| `socialProfileList.skype` | string | Skype |\n| `socialProfileList.quora` | string | Quora |\n| `socialProfileList.website` | string | Website |\n| `socialProfileList.medium` | string | Medium |\n| `socialProfileList.others` | string | Others |\n\n---",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738566457,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "order": [
+    "3770add9-9577-411d-864c-44b5d3aeadd1"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:13:22.000Z"
+  },
+  {
+   "id": "5d82f36a-5684-4323-a7c6-1d77eb95dda2",
+   "name": "Companies",
+   "description": "# Companies API\n\nThe Companies API allows you to query Tracxn's Company Database and apply multiple filters and sorts.\n\nTo search for companies by name, use the **Companies Name Search API** to first get the `id` or `domain`. You can then call this API with the `id` or `domain` as a filter to fetch the corresponding company details.\n\n---\n\n## Request Details\n\n### URL (Playground)\n\n`https://platform.tracxn.com/api/2.2/playground/companies`\n\n### Method\n\n`POST`\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Payload Body Parameters\n\n| Key | Description |\n| --- | --- |\n| `filter` | Filters to apply (see filter section) |\n| `sort` | Sorting criteria |\n| `from` | Pagination offset (default = 0) |\n| `size` | Max 20, optional (default = 20) |\n\n---\n\n### Sample cURL Request\n\n``` bash\ncurl --location 'https://platform.tracxn.com/api/2.2/playground/companies' \\\n--header 'accessToken: [Your Access Token]' \\\n--header 'Content-Type: application/json' \\\n--data '{\n  \"filter\": {\n    \"feedName\": [\"Cybersecurity\"],\n    \"city\": [\"San Francisco\"],\n    \"foundedYear\": [\"2018\", \"2017\", \"2016\"]\n  },\n  \"sort\": {\n    \"field\": \"foundedYear\",\n    \"order\": \"desc\"\n  },\n  \"from\": 0,\n  \"size\": 20\n}'\n\n ```\n\n'''\n\n## COMPANY FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **Domain** | `domain: [\"tracxn.com\"]` | Only normalized domains (remove 'https', 'www' and '/') |\n| **Company Stage** | `companyStage: [\"Unfunded\", \"Seed\", \"Early-Stage Funded\", \"Late-Stage Funded\", \"Acquired\"]` | \"Early-Stage Funded\" includes Series A & B, \"Late-Stage Funded\" includes Series C+ |\n| **Founded Year** | `foundedYear: [2008,2009]` |  |\n| **Date Added** | `firstPublishDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |  |\n| **Part Of** | `partOfDomain: [\"google.com\"]` | Only normalized domains |\n| **Domain Extension** | `domainSuffix: [\"com\", \"ai\"]` | Domain extensions (e.g., \"in\", \"org\") |\n| **Company Keyword** | `query: [\"Blockchain\"]``query: [\"+Blockchain +Contracts\"]``query: [\"\\\"Self Driving Cars\\\"\"]` | Supports exact phrases, boolean operators, and exclusions |\n| **Deadpooled Flag Last Updated Date** | `deadpooledFlagLastUpdatedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` | When company was marked deadpooled |\n| **ID** | `id: [\"nrG5itQu_3voVifgJjj52SGgucwK5dAJUNozT6vhxPw\"]` | Company ID |\n| **Competitor** | `competitorOf: [\"tracxn.com\"]` | Only normalized domains |\n| **Nominees** | `Nominees: [\"google.com\"]` | Current/past nominees (normalized domains) |\n| **Similar Companies** | `similarsOf: [\"tracxn.com\"]` | Only normalized domains |\n| **Bootstrapped Stage** | `bootstrapped: [\"Bootstrapped Large\"]` |  |\n| **Number of Open Jobs Positions** | `companyLatestOpenJobsCount` |  |\n\n## LOCATION FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Country** | `country: [\"United States\",\"Israel\"]` |\n| **State** | `state: [\"California\", \"New York\"]` |\n| **City** | `city: [\"San Francisco\", \"Boston\"]` |\n| **Continent** | `continent: [\"Asia\",\"Europe\"]` |\n| **Location** | `location: { \"country\":[\"United States\"], \"state\":[\"California\"], \"city\":[\"San Francisco\"],\"continent\": [\"Asia\"] }` |\n\n## VENDOR DISCOVERY FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **Customers Of** | `vendorsDomain: \"tracxn.com\"` | Only normalized domains |\n| **Vendors Of** | `customersDomain: [\"google.com\"]` | Only normalized domains |\n\n## FUNDING FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Total Funding** | `totalMoneyRaised: {\"min\":2000000, \"max\":20000000}` |\n| **Date of Latest Funding** | `latestFundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| **Date of Funding** | `fundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| **Date of First Funding** | `firstFundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| **Is Funded** | `isFunded: true` |\n\n## INVESTORS FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **Investor Domain** | `institutionalInvestorDomain: [\"sequoiacap.com\"]` | Only normalized domains |\n| **Investor Feed** | `investorFeedName: [\"Venture Capital Funds\", \"Private Equity Funds\"]` |  |\n| **Investor HQ Country** | `allInvestorsHeadquarterCountry: [\"United States\", \"India\"]` |  |\n| **Investor HQ State** | `allInvestorsHeadquarterState: [\"Karnataka\", \"Maharashtra\"]` |  |\n| **Investor HQ City** | `allInvestorsHeadquarterCity: [\"Bengaluru\", \"Mumbai\"]` |  |\n\n## SECTOR FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **Special Flags** | `specialFlags: {\"consumer\":[\"yes\"], \"enterprise\":[\"no\"], \"saas\":[\"untagged\"]}` |  |\n| **Practice Area** | `practiceArea: [\"Fintech\", \"Retail\"]` |  |\n| **Feed Name** | `feedName: [\"HRTech\", \"AI in Recruiting\"]` |  |\n| **Business Model (Old)** | `businessModelFullTree: [\"Payments > Wallet\"]` | (Deprecating soon) |\n| **Business Model (New)** | `businessModelPath: [{feedId: [\"5b8e5eae4f0ca1fbcd668f14\"], businessModel: [\"533d2b58e4b02eaca133995b\"]}]` |  |\n\n## ANALYST RATING FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Editor's Rating** | `editorRating: [4, 5]` |\n| **Editor's Rated Date** | `editorRatingUpdatedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| **Team Rating** | `teamRating: [4, 5]` |\n| **Team Rated Date** | `teamRatingUpdatedDate: {\"min\":\"01/06/2017\", \"max\":\"30/06/2017\"}` |\n| **Soonicorn Club Flag** | `soonicornFlag: [\"MINICORN\", \"UNICORN\"]` |\n| **Soonicorn Club Marked Date** | `soonicornMarkedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| **Soonicorn Club Event Date** | `soonicornEventDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n\n## EXITS FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **IPO Date** | `ipoDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |  |\n| **Acquisition Type** | `acquisitionType: [\"Acqui-Hired\",\"Management Buyout\",\"Leveraged Buyout\",\"Management Buy-In\",\"Business Acquisition\"]` |  |\n| **Acquired By** | `acquirerDomain: [\"google.com\"]` | Only normalized domains |\n| **Acquisition Price** | `acquisitionAmount: {\"min\":\"2000000\", \"max\":\"20000000\"}` |  |\n| **Acquisition Date** | `acquisitionDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |  |\n| **Acquirer Feed** | `companyAcquirerFeedName: [\"IT Services\", \"SaaS\"]` |  |\n| **Acquirer Country** | `acquirerCountry: [\"United States\", \"India\"]` |  |\n| **Acquirer State** | `acquirerState: [\"Karnataka\", \"Maharashtra\"]` |  |\n| **Acquirer City** | `acquirerCity: [\"Bengaluru\", \"Mumbai\"]` |  |\n\n## DISCOVERY FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Latest News Mention Date** | `latestNewsDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n\n## PEOPLE EXTERNAL FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Team Background** | `teamBackgroundName` |\n\n## METRICS EXTERNAL FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| **Mobile Downloads** | `mobileDownloads: {\"min\":2000, \"max\":2000000}` |\n| **Mobile Reviews** | `mobileReviewCount: {\"min\":200, \"max\":20000}` |\n| **Mobile Reviews Growth (6 month %)** | `mobileReviewGrowthPercent: {\"min\":2, \"max\":20}` |\n| **Mobile Ratings** | `mobileRating: {\"min\":2.5, \"max\":4.5}` |\n| **News Articles (All Time)** | `totalNewsArticles: {\"min\":2, \"max\":40}` |\n| **News Articles (12 months #)** | `numberOfNewsArticlesDeltaGrowth: {\"min\":0, \"max\":1000}` |\n| **News Articles (12 months %)** | `numberOfNewsArticlesGrowthPercent: {\"min\":0, \"max\":100}` |\n| **Mobile Reviews Momentum** | `mobileReviewsMomentumScore` |\n| **Total Momentum** | `totalMomentumScore` |\n| **App UI Rating** | `companyAppUIRating: [4, 5]` |\n| **App UI Rated Date** | `appUiRatingUpdatedDate: {\"min\":\"01/06/2017\", \"max\":\"30/06/2017\"}` |\n| **Web UI Rating** | `companyWebUIRating: [4, 5]` |\n| **Web UI Rated Date** | `webUiRatingUpdatedDate: {\"min\":\"01/06/2017\", \"max\":\"30/06/2017\"}` |\n| **Team Background Score** | `teamBackgroundScore: {\"min\":1, \"max\":10}` |\n| **Tracxn Score** | `tracxnScore: {\"min\":60, \"max\":100}` |\n| **Marquee Customer Mentions** | `numberOfMarqueeCustomerMentions: {\"min\":1}` |\n| **Awards** | `numberOfAwards: {\"min\":0, \"max\":1000}` |\n| **Latest Revenue growth (12 months #)** | `latestRevenueDeltaGrowth: {\"min\":0, \"max\":1000}` |\n| **Latest Revenue growth (12 months %)** | `latestRevenueGrowthPercent: {\"min\":0, \"max\":100}` |\n| **Investor Score** | `tracxnInvestorScore: {\"min\":70, \"max\":100}` |\n\n## CUSTOM LIST FILTER\n\n| FILTER | SAMPLE | NOTES |\n| --- | --- | --- |\n| **Bookmark List ID** | `bookmarkListId: [\"5f22b5d790d9a547d04ddb52\"]` | Use Custom List API to get list IDs |\n\n## Notes:\n\n1. Filters requiring \"min\" and \"max\" are inclusive of both values\n    \n2. At least one of \"min\" or \"max\" is mandatory for range filters\n    \n3. All filters use AND operator\n    \n4. Date format: dd/mm/yyyy\n    \n5. Domains must be normalized (remove https/www/trailing slashes)\n    \n\n# Sorts Applicable\n\n## COMPANY\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Name** | `companyName` |\n| **Founded Year** | `foundedYear` |\n| **Date Added** | `publishDate` |\n\n## FUNDING\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Total Funding** | `totalMoneyRaised` |\n| **Date of Funding** | `fundingRoundDate` |\n\n## ANALYST RATING\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Editor's Rating** | `editorRating` |\n| **Editor's Rated Date** | `editorRatingUpdatedDate` |\n| **Team Rating** | `teamRating` |\n| **Team Rated Date** | `teamRatingUpdatedDate` |\n| **Soonicorn Club Marked Date** | `soonicornMarkedDate` |\n| **Soonicorn Club Event Date** | `soonicornEventDate` |\n\n## EXITS\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Acquisition Date** | `acquisitionDate` |\n| **Acquisition Price** | `acquisitionAmount` |\n| **IPO Date** | `ipoDate` |\n\n## METRICS\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Tracxn Score** | `tracxnScore` |\n| **Investor Score** | `tracxnInvestorScore` |\n| **Team Background Score** | `teamBackgroundScore` |\n| **Mobile Downloads** | `mobileDownloads` |\n| **Mobile Reviews** | `mobileReviewCount` |\n| **Mobile Reviews Growth (6 month #)** | `mobileReviewsDeltaGrowth` |\n| **Mobile Reviews Growth (6 month %)** | `mobileReviewGrowthPercent` |\n| **Mobile Ratings** | `mobileRating` |\n| **App UI Rating** | `companyAppUIRating` |\n| **App UI Rated Date** | `appUiRatingUpdatedDate` |\n| **Web UI Rating** | `companyWebUIRating` |\n| **Web UI Rated Date** | `webUiRatingUpdatedDate` |\n| **Marquee Customer Mentions** | `numberOfMarqueeCustomerMentions` |\n| **Awards** | `numberOfAwards` |\n| **Latest Revenue growth (12 months #)** | `latestRevenueDeltaGrowth` |\n| **Latest Revenue growth (12 months %)** | `latestRevenueGrowthPercent` |\n| **News Articles (12 months #)** | `numberOfNewsArticlesDeltaGrowth` |\n| **News Articles (12 months %)** | `numberOfNewsArticlesGrowthPercent` |\n\n## RELEVANCE\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Relevance** | `relevance` |\n\n## DISCOVERY\n\n| SORTS | SAMPLE |\n| --- | --- |\n| **Latest News Mention Date** | `latestNewsDate` |\n\n---\n\n# Output Keys\n\n| Output Keys | Type | Description |\n| --- | --- | --- |\n| foundedYear | int | Year the company was founded in |\n| id | string | The id of the company in Tracxn DB |\n| name | string | The name of the company |\n| domain | string | The domain of the company |\n| location |  | Gives details about the headquarters of the company |\n| tracxnUrl | string | URL to find the company on Tracxn |\n| businessModelList |  | List of all feeds and business models of the company. For most use cases, we recommend using sectorList key over businessModelList. |\n| practiceAreaList |  | A list of the practice areas the company is tagged under |\n| description | string | Gives our Analyst curated description about the company |\n| contactNumberList | string | Gives a list of contact numbers of the company |\n| emailList | string | Gives a list of emails of the company |\n| employeeInfo |  | Gives details about the employees of the company |\n| companyRatings |  | Details about the various ratings of a company |\n| stageDetails |  | Gives details about the stage a company is in |\n| stage | string | The current stage of the company |\n| acquirerInfo |  | Gives details about the companies which have acquired the company in consideration |\n| ipoInfo |  | Gives IPO details of a public company |\n| deadpoolInfo |  | Gives details about the deadpooling of the company |\n| fundingInfo |  | Gives details about the funding raised by the company |\n| acquisitionList |  | List of companies acquired by the company in consideration |\n| partOf |  | Gives details of the company this company is part of |\n| sameAs | string | The domain of a company this company is same as |\n| profileLinks |  | Gives details about the social URLs of the company |\n| websiteInfo |  | Gives details about the company's website - if its working or returning an error |\n| mobileInfo |  | Gives details about the mobile apps of the company |\n| newsInfo |  | Gives details about news related with the company |\n| locations |  |  |\n| logos |  |  |\n| tracxnInvestorScore | double | Gives the investorScore of the company |\n| latestEmployeeCount |  |  |\n| latestValuation |  |  |\n| latestAnnualRevenue |  |  |\n| addresses |  |  |\n| teamBackgroundList |  |  |\n| facilitatorList |  | A consolidated list of all facilitators for the company |\n| tracxnScore | double | Gives the tracxnScore of the company |\n| boardMembers | list | IDs of both present and past boardmembers |\n| nominees | list | IDs of both present and past nominees |\n| metrics |  |  |\n| specialFlagList |  |  |\n| tracxnTeamScore | double |  |\n| socketReachability |  |  |\n| achievements |  |  |\n| tracxnId | string |  |\n| latestFinancialDomainEbitda |  |  |\n| latestFinancialDomainNetProfit |  |  |\n| tracxnSizeScore | double | Gives the tracxnSizeScore of the company |\n| tracxnExecutionScore | double | Gives the tracxnExecutionScore of the company |\n| tracxnGrowthScore | double | Gives the tracxnGrowthScore of the company |\n| sectorList | list | List of PRIMARY sector (coverage areas) nodes of the company in hierarchy: Practice Area > Feed > Business Model 1 > Business Model 2 > .... For most use cases, we recommend using this over businessModelList key. |\n| vendorDetails |  |  |\n| companyId | string |  |\n| totalMoneyRaised |  | Gives details about the total money raised by the company till date |\n| investorList |  | A consolidated list of investors invested in the company at any time |\n| totalEquityFunding |  |  |",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738879612,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "order": [
+    "648657b0-57d1-4927-92c7-2298eef54b23"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:24:04.000Z"
+  },
+  {
+   "id": "665b4f8c-6814-40b9-8649-7dcf7cae2f63",
+   "name": "Funding Round",
+   "description": "# Key Metrics API - Funding Rounds\n\n## Overview\n\nThe Key Metrics API enables users to retrieve aggregated data metrics for various data types, such as companies, funding rounds, investors, and acquisitions. The API supports single-level and two-level aggregation with customizable filters.\n\n---\n\n## Request Details\n\n### URL (Production)\n\n[https://platform.tracxn.com/api/3.0/playground/fundingrounds/metric](https://platform.tracxn.com/api/3.0/fundingrounds/metric)\n\n### Method\n\nPOST\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Aggregation Modes\n\n### One-Level Aggregation\n\nAggregates the metric over the entire filtered dataset.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\"\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ]\n  },\n  \"metric\": \"averageFundingAmount\"\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\nAggregates the metric and groups the result by a specified field.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\",\n  \"bucket\": [\n    {\n      \"field\": \"<aggregationKey>\"\n    }\n  ]\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ]\n  },\n  \"metric\": \"sumFundingAmount\",\n  \"bucket\": [\n    {\n      \"field\": \"city\"\n    }\n  ]\n}\n\n ```\n\n> **Note:** Only top 20 groups are returned for two-level aggregation. \n  \n\n---\n\n## Metric Name \\[Funding Rounds\\]\n\n| Metric Name | Description | Example Use Case |\n| --- | --- | --- |\n| sumFundingAmount | Total funding amount aggregated across all applicable entities | Calculate total sector funding |\n| averageFundingAmount | Average funding amount across all matching entities | Analyze average investment size |\n| medianFundingAmount | Median funding value to understand typical funding without outliers | Median funding in regions |\n| count | Count of funding rounds that match the filters | Total number of funding rounds |\n\n---\n\n## Allowed Filters and Aggregation Keys for \\[Funding Rounds\\]\n\n### Sector Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| practiceAreaId | \\[\"Fintech\", \"Retail\"\\] | Yes |\n| feedId | \\[\"HRTech\", \"AI in Recruiting\"\\] | Yes |\n| businessModel | \\[\"5b8e5eae4f0ca1fbcd668f14\"\\] | Yes |\n\n### Location Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| country | \\[\"United States\", \"Israel\"\\] | Yes |\n| countryAndCountryGroupId | \\[\"58075391e4b00a7b5be3ad99\"\\] | Yes |\n| continent | \\[\"Asia\", \"Europe\"\\] | Yes |\n| continentAndContinentGroupId | \\[\"5cb5bff887870743a49871c1\"\\] | Yes |\n| city | \\[\"San Francisco\", \"Boston\"\\] | Yes |\n| cityAndCityGroupId | \\[\"57c6a01ae4b07365c7e4a08f\"\\] | Yes |\n\n### Company Filters\n\n| Filter | Sample | Aggregation Allowed | Notes |\n| --- | --- | --- | --- |\n| companyStage | \\[\"Unfunded\", \"Seed\", \"Early-Stage Funded\"\\] | Yes | Early-Stage = Series A/B, Late-Stage = Series C+ |\n| foundedYear | \\[2008, 2009\\] | Yes | Year range supported |\n\n### Funding Round Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| transactionFundingRoundCategory | \\[\"Series B\", \"Series C\"\\] | Yes |\n| transactionFundingRoundDate | {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"} | Yes |\n| transactionFundingRoundAmount | {\"min\":1000000,\"max\":1000000000000} | No |\n\n### Investor Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| transactionInstitutionalInvestor | \\[\"FW_V543a8gRgbcOoI8McWTD8IPK9xTQQwUuKLN7onQ4\"\\] | No |\n| fundingRoundInvestorFeedId | \\[\"5d0cbf788787074dea68febe\"\\] | Yes |\n\n---\n\n## Sample Request and Response\n\n### One-Level Aggregation\n\n**Sample Request for** **`medianFundingAmount`** **for India:**\n\n``` json\n{\n  \"filter\": {\n    \"country\": [\n      \"India\"\n    ]\n  },\n  \"metric\": \"medianFundingAmount\"\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": 625493.3602364075\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\n**Sample Request for** **`count`** **grouped by** **`feedId`****:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ],\n    \"country\": [\n      \"India\"\n    ],\n    \"companyStage\": [\n      \"Funded\"\n    ]\n  },\n  \"metric\": \"count\",\n  \"bucket\": [\n    {\n      \"field\": \"feedId\"\n    }\n  ]\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": [\n    {\n      \"term\": \"52ff2cfce4b0b193ed664d1a\",\n      \"value\": 268\n    }\n  ]\n}\n\n ```\n\n---",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741252880,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "7932e102-664d-4c90-8162-c17e105608d9",
+   "order": [
+    "9eb43f7e-3311-4b02-8ab4-9d7593c649da"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:02:38.000Z"
+  },
+  {
+   "id": "6a071de2-a060-48a1-a6b7-0300a65aba7b",
+   "name": "Acquisitions",
+   "description": "## Acquisitions API\n\nThe Acquisitions API allows you to query the Acquisitions Database and apply multiple filters and sorts.\n\n### REQUEST DETAILS\n\n- **URL (Playground):**  \n    `https://platform.tracxn.com/api/2.2/playground/acquisitiontransactions`\n    \n- **Method:**  \n    `POST`\n    \n- **Header:**\n    \n    - `accessToken`: \\[accessToken as given by Tracxn\\]\n        \n    - `Content-Type`: `application/json`\n        \n- **Body (Payload):**\n    \n    - `filter`: \\[Criteria by which you want to filter Acquisitions \\]\n        \n    - `sort`: \\[Criteria by which you want the Acquisitions sorted\\]\n        \n    - `from`: \\[Pagination offset\\]  \n        Default value = 0\n        \n    - `size`: \\[Number of Acquisitions to be returned in each API response\\]  \n        Default and maximum allowed value = 20.  \n        Use only if you want to fetch fewer than 20 Acquisitions.\n        \n\n---\n\n### Sample cURL Request\n\n``` bash\ncurl -X POST \\\nhttps://platform.tracxn.com/api/2.2/acquisitiontransactions\\\n-H 'accesstoken: [access-token-given-by-tracxn]' \\\n-H 'cache-control: no-cache' \\\n-H 'Content-Type: application/json' \\\n-d '{\"filter\":{\"acquisitionType\":[\"Business Acquisition\"],\"acquirerListDomain\":[\"kkr.com\"]}}'\n\n ```\n\n---\n\n## Filters Applicable\n\n### ACQUISITION ROUND FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Acquisition Type | `acquisitionType: [\"Acqui-Hired\",\"Management Buyout\",\"Leveraged Buyout\",\"Management Buy-In\",\"Business Acquisition\"]` |\n| Announcement Type | `announcementDate: {min: \"01/01/2020\", max: \"30/09/2020\"}` |\n| Is Key Acquisition | `isKeyAcquisition: true` |\n| Acquirer List Domain | `acquirerListDomain: [\"kkr.com\"]` |\n| Acquirer Country | `acquirerCountry: [\"United States\", \"India\"]` |\n| Acquirer State | `acquirerState: [\"Karnataka\", \"Maharashtra\"]` |\n| Acquirer City | `acquirerCity: [\"Bengaluru\", \"Mumbai\"]` |\n| Facilitator List Domain | `facilitatorListDomain: [\"goldmansachs.com\"]` |\n| Acquisition Price | `acquisitionAmount: {\"min\":\"2000000\", \"max\":\"20000000\"}` |\n\n> **Note**: Only normalized domains (e.g., `tracxn.com`) are supported. Please remove `https`, `www` and `/` before passing the parameter. \n  \n\n---\n\n### LOCATION FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| State | `state: [\"California\", \"New York\"]` |\n| Country | `country: [\"United States\",\"Israel\"]` |\n| City | `city: [\"San Francisco\", \"Boston\"]` |\n\n---\n\n### COMPANY FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Tracxn Score | `tracxnScore: {\"min\":60 , \"max\":100}` |\n| Domain | `domain: [\"tracxn.com\", \"slack.com\"]` |\n| Company Stage | `companyStage: [\"Unfunded\", \"Seed\", \"Early-Stage Funded\", \"Late-Stage Funded\", \"Acquired\"]` |\n| Founded Year | `foundedYear: [2008,2009]` |\n| Date Added | `firstPublishDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Part Of | `partOfDomain: [\"google.com\"]` |\n| Domain Extension | `domainSuffix: [\"com\", \"ai\"]` |\n| Associated Legal Entity | `legalEntityLatestName: [\"Crunchbase Inc\"]` |\n| Competitor | `competitorOf: [\"tracxn.com\"]` |\n| Similar Companies | `similarsOf: [\"tracxn.com\"]` |\n| Deadpooled Flag Last Updated Date | `deadpooledFlagLastUpdatedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n\n#### Company Keyword\n\n- `query: [\"Blockchain\"]` \u2013 Have the keyword \"Blockchain\"\n    \n- `query: [\"Cryptocurrency Altcoins\"]` \u2013 Have either of the keywords\n    \n- `query: [\"+Blockchain +Contracts\"]` \u2013 Have both\n    \n- `query: [\"\\\"Self Driving Cars\\\"\"]` \u2013 Exact phrase\n    \n- `query: [\"\\\"Virtual Reality\\\" -Gaming\"]` \u2013 Exact phrase but not \"Gaming\"\n    \n- `query: [\"(+Blockchain +Legal) (+Blockchain +\\\"Law Firms\\\")\"]` \u2013 Either condition\n    \n\n---\n\n### COMPANY FUNDING FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Total Funding | `totalMoneyRaised: {\"min\":2000000, \"max\":20000000}` |\n| Number of funding rounds | `numberOfFundingRounds: {min: 3}` |\n| Date of Latest Funding | `latestFundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Date of Funding | `fundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Date of First Funding | `firstFundingRoundDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Funding Round Name | `transactionFundingRoundCategory: [\"Series B\",\"Series C\"]` |\n| Funding Round Facilitators | `fundingRoundFacilitators: [\"goldmansachs.com\"]` |\n\n---\n\n### COMPANY INVESTORS FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Investor Feed | `investorFeedName: [\"Venture Capital Funds\", \"Private Equity Funds\"]` |\n| Institutional Investor | `institutionalInvestor: [\"52d0b2e9e4b00c95d6275515\"]` |\n| Angel Investor | `angelInvestor: [\"52ff5fb6e4b0f5316e5a8dd3\"]` |\n\n---\n\n### SECTOR FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Special Flags | `specialFlags: {\"consumer\":[\"yes\"], \"enterprise\":[\"no\"], \"saas\":[\"untagged\"]}` |\n| Practice Area | `practiceArea: [\"Fintech\", \"Retail\"]` |\n| Feed Name | `feedName: [\"HRTech\", \"AI in Recruiting\"]` |\n| Business Model (Old) | `businessModelFullTree: [\"Payments > Wallet\"]` |\n| Business Model (New) | `businessModelPath: [{feedId: [\"5b8e5eae4f0ca1fbcd668f14\"], businessModel: [\"533d2b58e4b02eaca133995b\"]}]` |\n\n---\n\n### ANALYST RATING FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Editor's Rating | `editorRating: [4, 5]` |\n| Editor's Rated Date | `editorRatingUpdatedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Team Rating | `teamRating: [4, 5]` |\n| Team Rated Date | `teamRatingUpdatedDate: { \"min\": \"01/06/2017\" , \"max\": \"30/06/2017\" }` |\n| Soonicorn Club Flag | `soonicornFlag: [\"MINICORN\", \"UNICORN\"]` |\n| Soonicorn Marked Date | `soonicornMarkedDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Soonicorn Event Date | `soonicornEventDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n\n---\n\n### IPO FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| IPO Date | `ipoDate: {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"}` |\n| Exchange | `exchange: [\"NASDAQ\"]` |\n| Ticker | `ticker: [\"AMWL\", \"BLI\"]` |\n\n---\n\n### METRICS FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Twitter Followers | `twitterFollowerCount: {\"min\":200, \"max\":\"5000\"}` |\n| Twitter Followers Growth (#) | `twitterFollowersGrowth: {min: 1000, max: 10000}` |\n| Twitter Followers Growth (%) | `twitterFollowerGrowthPercent: {\"min\":2, \"max\":20}` |\n| Mobile Downloads | `mobileDownloads: {\"min\":2000, \"max\":2000000}` |\n| Mobile Reviews | `mobileReviewCount: {\"min\":200, \"max\":20000}` |\n| Mobile Reviews Growth (#) | `mobileReviewsGrowth: {min: 10000, max: 100000}` |\n| Mobile Reviews Growth (%) | `mobileReviewGrowthPercent: {\"min\":2, \"max\":20}` |\n| App UI Rating | `companyAppUIRating: [4, 5]` |\n| Web UI Rating | `companyWebUIRating: [4, 5]` |\n| Web UI Rated Date | `webUiRatingUpdatedDate: { \"min\": \"01/06/2017\" , \"max\": \"30/06/2017\" }` |\n| App UI Rated Date | `appUiRatingUpdatedDate: { \"min\": \"01/06/2017\" , \"max\": \"30/06/2017\" }` |\n| News Articles (All Time) | `totalNewsArticles: {\"min\":2,\" max\":40}` |\n| Investor Score | `tracxnInvestorScore: {\"min\":70 , \"max\":100}` |\n\n---\n\n### VENDORS DISCOVERY FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Customers Of | `vendorsDomain: \"tracxn.com\"` |\n| Marquee Customer Mentions | `numberOfMarqueeCustomerMentions: {min: 1}` |\n\n---\n\n### CAP TABLE FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Event date of Latest Cap Table | `latestCapTableEventDate: {min: \"01/01/2020\", max: \"30/09/2020\"}` |\n| Published date of Latest Cap Table | `latestCapTablePublishDate: {min: \"01/01/2020\", max: \"30/09/2020\"}` |\n\n---\n\n### FINANCIALS FILTER\n\n| FILTER | SAMPLE |\n| --- | --- |\n| Latest Financial Period Ending Date | `latestFinancialPeriodEndingDate: {min: \"01/01/2020\", max: \"30/09/2020\"}` |\n| Latest Financial Published Date | `latestFinancialPublishedDate: {min: \"01/01/2020\", max: \"30/09/2020\"}` |\n\n---\n\n### Notes\n\n1. Filters requiring `\"min\"` and `\"max\"` are inclusive of both values.\n    \n2. At least one of `\"min\"` or `\"max\"` is mandatory where applicable.\n    \n3. All filters are joined using `AND`.\n    \n4. Dates should be in `dd/mm/yyyy` format.\n    \n\n---\n\n## Sorts Applicable\n\n### ACQUISITION ROUND\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Announcement Type | `announcementDate` |\n| Acquisition Price | `acquisitiontransactionNormalizedAmount` |\n| Trailing Revenue | `trailingRevenueNormalizedAmount` |\n| Stake Acquired | `stakesAcquired` |\n\n### COMPANY\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Tracxn Score | `tracxnScore` |\n| Name | `companyName` |\n| Founded Year | `foundedYear` |\n| Date Added | `publishDate` |\n| Deadpooled Flag Last Updated Date | `deadpooledFlagLastUpdatedDate` |\n| Associated Legal Entity | `legalEntityLatestName` |\n\n### ANALYST RATING\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Editor's Rating | `editorRating` |\n| Editor's Rated Date | `editorRatingUpdatedDate` |\n| Soonicorn Club Flag | `soonicornFlag` |\n| Soonicorn Club Marked Date | `soonicornMarkedDate` |\n| Soonicorn Club Event Date | `soonicornEventDate` |\n| Team Rating | `teamRating` |\n| Team Rated Date | `teamRatingUpdatedDate` |\n\n### IPO\n\n| SORTS | SAMPLE |\n| --- | --- |\n| IPO Date | `ipoDate` |\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Top Acquisitions | `topAcquisitions` |\n\n### RELEVANCE\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Relevance | `relevance` |\n\n### METRICS\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Twitter Followers | `twitterFollowerCount` |\n| Twitter Followers Growth (6 month #) | `twitterFollowersGrowth` |\n| Twitter Followers Growth (6 month %) | `twitterFollowerGrowthPercent` |\n| Mobile Downloads | `mobileDownloads` |\n| Mobile Reviews | `mobileReviewCount` |\n| Mobile Reviews Growth (6 month #) | `mobileReviewsDeltaGrowth` |\n| Mobile Reviews Growth (6 month %) | `mobileReviewGrowthPercent` |\n| App UI Rating | `companyAppUIRating` |\n| Web UI Rated Date | `webUiRatingUpdatedDate` |\n| App UI Rated Date | `appUiRatingUpdatedDate` |\n| Web UI Rating | `companyWebUIRating` |\n| News Articles (12 months #) | `numberOfNewsArticlesDeltaGrowth` |\n\n### VENDORS DISCOVERY\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Marquee Customer Mentions | `numberOfMarqueeCustomerMentions` |\n\n### CAP TABLE\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Event date of Latest Cap Table | `latestCapTableEventDate` |\n| Published date of Latest Cap Table | `latestCapTablePublishDate` |\n\n### FINANCIALS\n\n| SORTS | SAMPLE |\n| --- | --- |\n| Latest Financial Period Ending Date | `latestFinancialPeriodEndingDate` |\n| Latest Financial Published Date | `latestFinancialPublishedDate` |\n\n---\n\n## Output Keys\n\n### Flat Fields\n\n| Field | Type | Description |\n| --- | --- | --- |\n| domain | string |  |\n| company | string |  |\n| tracxnId | string |  |\n| createdBy | string |  |\n| synopsis | string |  |\n| status | string |  |\n\n---\n\n### Amount Objects\n\n#### amountPaid\n\n| Field | Type | Description |\n| --- | --- | --- |\n| amountPaid.amount | double |  |\n| amountPaid.currency | string |  |\n| amountPaid.normalizedAmount | long |  |\n| amountPaid.normalizedCurrency | string |  |\n\n#### amountInCash\n\n| Field | Type | Description |\n| --- | --- | --- |\n| amountInCash.amount | double |  |\n| amountInCash.currency | string |  |\n| amountInCash.normalizedAmount | long |  |\n| amountInCash.normalizedCurrency | string |  |\n\n#### amountInStock\n\n| Field | Type | Description |\n| --- | --- | --- |\n| amountInStock.amount | double |  |\n| amountInStock.currency | string |  |\n| amountInStock.normalizedAmount | long |  |\n| amountInStock.normalizedCurrency | string |  |\n\n#### totalAmount\n\n| Field | Type | Description |\n| --- | --- | --- |\n| totalAmount.amount | double |  |\n| totalAmount.currency | string |  |\n| totalAmount.normalizedAmount | long |  |\n| totalAmount.normalizedCurrency | string |  |\n\n#### sharePriceInfo\n\n| Field | Type | Description |\n| --- | --- | --- |\n| sharePriceInfo.amount | double |  |\n| sharePriceInfo.currency | string |  |\n| sharePriceInfo.normalizedAmount | long |  |\n| sharePriceInfo.normalizedCurrency | string |  |\n\n#### trailingRevenue\n\n| Field | Type | Description |\n| --- | --- | --- |\n| trailingRevenue.amount | double |  |\n| trailingRevenue.currency | string |  |\n| trailingRevenue.normalizedAmount | long |  |\n| trailingRevenue.normalizedCurrency | string |  |\n\n#### valuationInfo\n\n| Field | Type | Description |\n| --- | --- | --- |\n| valuationInfo.amount | double |  |\n| valuationInfo.currency | string |  |\n| valuationInfo.normalizedAmount | long |  |\n| valuationInfo.normalizedCurrency | string |  |\n\n---\n\n### basicRoundDetail\n\n| Field | Type | Description |\n| --- | --- | --- |\n| basicRoundDetail.acquisitionType | string |  |\n\nIncludes nested amounts same as above (`amountPaid`, `amountInCash`, `amountInStock`, `totalAmount`)\n\n---\n\n### Date Objects\n\n#### announcementDate / boardApprovalDate / completionDate / createdDate\n\n| Field | Type |\n| --- | --- |\n| day | Integer |\n| month | Integer |\n| year | Integer |\n| hours | Integer |\n| minutes | Integer |\n| seconds | Integer |\n\n---\n\n### acquirerList / facilitatorList / sellersList\n\n| Field | Type |\n| --- | --- |\n| domain | string |\n| company | string |\n\n---\n\n### notablePeopleList\n\n| Field | Type |\n| --- | --- |\n| id | string |\n| firstName | string |\n| lastName | string |\n| tracxnId | string |\n| type | string |\n\n---\n\n### shareHolders\n\n| Field | Type |\n| --- | --- |\n| id | string |\n| firstName | string |\n| lastName | string |\n| type | string |\n| tracxnId | string |\n\n---\n\n### sourceList\n\n| Field | Type |\n| --- | --- |\n| id | string |\n| type | string |\n| url | string |\n| tracxnId | string |\n\n---\n\n### sorts\n\n| Field | Type |\n| --- | --- |\n| key | string |\n| value | string |\n| type | string |\n| tracxnId | string |\n\n---\n\n**Note:**\n\n1. Filters requiring `\"min\"` and `\"max\"` are inclusive of both the values.\n    \n2. It is mandatory to put in at least one of `\"min\"` or `\"max\"` in filters requiring such values.\n    \n3. All filters are joined by an AND operator. Other operators will be included in subsequent versions where we introduce advanced filters.\n    \n4. All dates are to be entered in `dd/mm/yyyy` format.",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738475281,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "396fb85d-ab01-4cd2-8a10-f3255dba0fbb",
+   "order": [
+    "253eb0f4-4613-4f6a-b205-a0708c87d119"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:09:32.000Z"
+  },
+  {
+   "id": "6b25a611-e2d1-4983-aa19-bd65fc85f63a",
+   "name": "API Version 3.0 Playground",
+   "description": "# Welcome to Tracxn API Version 3.0\n\nVersion 3.0 is the latest and most powerful release of the Tracxn API \u2014 designed to give developers and businesses streamlined access to private market intelligence.\n\n---\n\n## What is the Tracxn API?\n\nThe Tracxn API enables you to:\n\n- Access structured, curated data from the private market\n    \n- Analyze startups, sectors, transactions, and market activity efficiently\n    \n- Leverage historical and time-series data to identify trends and patterns\n    \n- Filter and sort across hundreds of fields for precise results\n    \n- Track financials and performance over time\n    \n\n---\n\n## Why Use Version 3.0?\n\n- Cleaner and more consistent schema\n    \n- Faster query performance\n    \n- Extended documentation and examples\n    \n- More robust support for aggregation, time-series analysis, and advanced queries\n    \n\n---\n\nTracxn API empowers users to skip time-consuming data collection and instead focus on building insights, dashboards, and scalable workflows with ease.",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741185132,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": null,
+   "order": [],
+   "folders_order": [
+    "7932e102-664d-4c90-8162-c17e105608d9"
+   ],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T11:59:38.000Z"
+  },
+  {
+   "id": "7932e102-664d-4c90-8162-c17e105608d9",
+   "name": "Key Metrics",
+   "description": "## Key Metrics API\n\nThe **Key Metrics API** enables users to retrieve aggregated data metrics across various datasets.\n\nSupported datasets include:\n\n- **Companies**\n    \n- **Funding Rounds** _(See separate documentation for each in the Key Metrics API collection)_\n    \n- **Investors**\n    \n- **Acquisitions**\n    \n\n---\n\n### What is Aggregation?\n\nAggregation enables analytical insights by performing calculations and statistical operations across a set of documents. It also allows grouping data into buckets based on fields such as text or date, enabling structured and meaningful analysis.\n\n---\n\n### Types of Aggregation\n\n1. **One-Level Aggregation**\n    \n    - Aggregates metrics across the **entire filtered dataset**.\n        \n    - Returns overall metrics (e.g., count, sum, average).\n        \n2. **Two-Level Aggregation**\n    \n    - Aggregates metrics **and groups** them by a specific field (e.g., `country`, `sector`, or `round type`).\n        \n    - Useful for **segment-level** analysis.\n        \n\n---",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741203730,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "6b25a611-e2d1-4983-aa19-bd65fc85f63a",
+   "order": [],
+   "folders_order": [
+    "caa5ad81-ecc3-4ddd-82a1-82a6cab2bd3f",
+    "665b4f8c-6814-40b9-8649-7dcf7cae2f63",
+    "e6801599-efce-4630-bdf2-439badcac79f",
+    "9bbce42f-2702-48fb-bfb8-2a827e2bf415"
+   ],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:00:24.000Z"
+  },
+  {
+   "id": "9bbce42f-2702-48fb-bfb8-2a827e2bf415",
+   "name": "Acquisitions",
+   "description": "# Key Metrics API - Acquisitions\n\n## Overview\n\nThe Key Metrics API enables users to retrieve aggregated data metrics for various data types, such as companies, funding rounds, investors, and acquisitions. The API supports single-level and two-level aggregation with customizable filters.\n\n---\n\n## Request Details\n\n### URL (Production)\n\n[https://platform.tracxn.com/api/3.0/playground/acquisitions/metric](https://platform.tracxn.com/api/3.0/acquisitions/metric)\n\n### Method\n\nPOST\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Aggregation Modes\n\n### One-Level Aggregation\n\nAggregates the metric over the entire filtered dataset.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\"\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ]\n  },\n  \"metric\": \"sumAcquisitionPrice\"\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\nAggregates the metric and groups the result by a specified field.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\",\n  \"bucket\": [\n    {\n      \"field\": \"<aggregationKey>\"\n    }\n  ]\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ]\n  },\n  \"metric\": \"averageAcquisitionPrice\",\n  \"bucket\": [\n    {\n      \"field\": \"country\"\n    }\n  ]\n}\n\n ```\n\n> **Note:** Only top 20 groups are returned for two-level aggregation. \n  \n\n---\n\n## Metric Name \\[Acquisitions\\]\n\n| Metric Name | Description | Example Use Case |\n| --- | --- | --- |\n| count | Total count of entities that match the specified filters | Get the number of acquisitions in a sector |\n| sumAcquisitionPrice | Total acquisition price across all entities matching the filters | Calculate total acquisition value for a sector |\n| medianAcquisitionPrice | Median acquisition value to understand the typical price without being skewed by outliers | Median acquisition value in a region |\n| averageAcquisitionPrice | Average acquisition price over all entities that match the filters | Analyze average acquisition price for tech firms |\n\n---\n\n## Allowed Filters and Aggregation Keys for \\[Acquisitions\\]\n\n### Sector Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| practiceAreaId | \\[\"Fintech\", \"Retail\"\\] | Yes |\n| feedId | \\[\"HRTech\", \"AI in Recruiting\"\\] | Yes |\n| businessModel | \\[\"5b8e5eae4f0ca1fbcd668f14\"\\] | Yes |\n\n### Location Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| country | \\[\"United States\", \"Israel\"\\] | Yes |\n| countryAndCountryGroupId | \\[\"58075391e4b00a7b5be3ad99\"\\] | Yes |\n| continent | \\[\"Asia\", \"Europe\"\\] | Yes |\n| continentAndContinentGroupId | \\[\"5cb5bff887870743a49871c1\"\\] | Yes |\n| city | \\[\"San Francisco\", \"Boston\"\\] | Yes |\n| cityAndCityGroupId | \\[\"57c6a01ae4b07365c7e4a08f\"\\] | Yes |\n\n### Company Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| foundedYear | \\[2008, 2009\\] | Yes |\n\n### Acquisition Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| announcementDate | { \"min\": \"01/01/2020\", \"max\": \"30/09/2020\" } | Yes |\n| acquisitionType | \\[\"Acqui-Hired\",\"Management Buyout\",\"Business Acquisition\"\\] | Yes |\n\n---\n\n## Sample Request and Response\n\n### One-Level Aggregation\n\n**Sample Request for** **`count`** **for India:**\n\n``` json\n{\n  \"filter\": {\n    \"country\": [\n      \"India\"\n    ]\n  },\n  \"metric\": \"count\"\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": 4923\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\n**Sample Request for** **`count`** **grouped by** **`acquisitionType`****:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\n      \"5409cb72e4b0efef66413044\"\n    ],\n    \"country\": [\n      \"India\"\n    ]\n  },\n  \"metric\": \"count\",\n  \"bucket\": [\n    {\n      \"field\": \"acquisitionType\"\n    }\n  ]\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": [\n    {\n      \"term\": \"Business Acquisition\",\n      \"value\": 60\n    },\n    {\n      \"term\": \"Acqui-Hired\",\n      \"value\": 34\n    }\n  ]\n}\n\n ```",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741272968,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "7932e102-664d-4c90-8162-c17e105608d9",
+   "order": [
+    "d9577b6d-40b9-4810-a777-7f19ad112d2a"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:03:43.000Z"
+  },
+  {
+   "id": "caa5ad81-ecc3-4ddd-82a1-82a6cab2bd3f",
+   "name": "Company",
+   "description": "# Key Metrics API Documentation\n\n## Overview\n\nThe Key Metrics API enables retrieval of aggregated data metrics for companies, funding rounds, investors, and acquisitions. It supports single-level and two-level aggregation with customizable filters.\n\n---\n\n## Endpoints\n\n- **Playground:**  \n    `POST https://platform.tracxn.com/api/3.0/playground/companies/metric`\n    \n\n---\n\n## Request Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| `accessToken` | \\[Your Tracxn Access Token\\] | Yes |\n| `Content-Type` | `application/json` | Yes |\n\n---\n\n## Request Body Structure\n\n### One-Level Aggregation\n\nUse this to aggregate a metric over the entire filtered dataset.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\"\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\"5409cb72e4b0efef66413044\"]\n  },\n  \"metric\": \"sumFundingAmount\"\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\nUse this to aggregate and group metrics by a specified field.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\",\n  \"bucket\": [{\n    \"field\": \"<aggregationKey>\"\n  }]\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceAreaId\": [\"5409cb72e4b0efef66413044\"]\n  },\n  \"metric\": \"sumFundingAmount\",\n  \"bucket\": [{\n    \"field\": \"country\"\n  }]\n}\n\n ```\n\n> _Note: Two-level aggregation returns results for only the top 20 categories._ \n  \n\n---\n\n## Available Metrics (Companies)\n\n| Metric Name | Description | Example Use Case |\n| --- | --- | --- |\n| `sumFundingAmount` | Total funding amount | Calculate sector funding |\n| `averageFundingAmount` | Average funding per company | Analyze funding trends |\n| `medianFundingAmount` | Median funding value (ignores outliers) | Identify typical funding |\n| `sumEmployeeCount` | Total number of employees | Measure workforce size |\n| `averageEmployeeCount` | Average employees per company | Understand average company size |\n| `medianEmployeeCount` | Median employees per company | Assess typical company size |\n| `count` | Total number of entities | Count of matching companies |\n\n---\n\n## Available Filters\n\n### Sector Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| `practiceAreaId` | `[\"Fintech\", \"Retail\"]` | Yes |\n| `feedId` | `[\"HRTech\", \"AI in Recruiting\"]` | Yes |\n| `businessModel` | `[\"5b8e5eae4f0ca1fbcd668f14\"]` | Yes |\n\n### Location Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| `country` | `[\"United States\", \"Israel\"]` | Yes |\n| `state` | `[\"California\", \"New York\"]` | Yes |\n| `city` | `[\"San Francisco\", \"Boston\"]` | Yes |\n| `continent` | `[\"Asia\", \"Europe\"]` | Yes |\n\n### Company Filters\n\n| Filter | Sample | Notes |\n| --- | --- | --- |\n| `companyStage` | `[\"Seed\", \"Early-Stage Funded\"]` | Early = Series A/B; Late = Series C+ |\n| `foundedYear` | `[2008, 2009]` | Filter by incorporation year |\n\n---\n\n## Sample Requests & Responses\n\n### One-Level Aggregation\n\n**Request:**\n\n``` json\n{\n  \"filter\": {\n    \"country\": [\"India\"]\n  },\n  \"metric\": \"averageFundingAmount\"\n}\n\n ```\n\n**Response:**\n\n``` json\n{\n  \"result\": {\n    \"result\": 375321\n  }\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\n**Request:**\n\n``` json\n{\n  \"filter\": {\n    \"practiceArea\": [\"Artificial Intelligence\"]\n  },\n  \"metric\": \"count\",\n  \"bucket\": [{\n    \"field\": \"companyStage\"\n  }]\n}\n\n ```\n\n**Response:**\n\n``` json\n{\n  \"result\": {\n    \"result\": [\n      { \"term\": \"Angel\", \"count\": 150 },\n      { \"term\": \"Seed\", \"count\": 85 }\n    ]\n  }\n}\n\n ```\n\n---\n\n## Important Notes\n\n1. Only top 20 buckets are returned in two-level aggregation.\n    \n2. All filters use AND logic by default.\n    \n3. Date values must follow `dd/mm/yyyy` format if applicable.\n    \n4. A valid `accessToken` is mandatory.\n    \n5. \u201cEarly-Stage\u201d includes Series A/B, \u201cLate-Stage\u201d includes Series C and beyond.\n    \n\n---",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741244463,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "7932e102-664d-4c90-8162-c17e105608d9",
+   "order": [
+    "f046b8b8-1928-4b52-938f-85269f46cedb"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:02:07.000Z"
+  },
+  {
+   "id": "e6801599-efce-4630-bdf2-439badcac79f",
+   "name": "Investors",
+   "description": "# Key Metrics API - Investors\n\n## Overview\n\nThe Key Metrics API enables users to retrieve aggregated data metrics for various data types, such as companies, funding rounds, investors, and acquisitions. The API supports single-level and two-level aggregation with customizable filters.\n\n---\n\n## Request Details\n\n### URL (Production)\n\n[https://platform.tracxn.com/api/3.0/playground/investors/metric](https://platform.tracxn.com/api/3.0/investors/metric)\n\n### Method\n\nPOST\n\n### Headers\n\n| Header | Value | Required |\n| --- | --- | --- |\n| accessToken | \\[Access Token from Tracxn\\] | Yes |\n| Content-Type | application/json | Yes |\n\n---\n\n## Aggregation Modes\n\n### One-Level Aggregation\n\nAggregates the metric over the entire filtered dataset.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\"\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"investorFeedId\": [\n      \"572cb232e4b0f2e791b91b0a\"\n    ]\n  },\n  \"metric\": \"count\"\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\nAggregates the metric and groups the result by a specified field.\n\n``` json\n{\n  \"filter\": {\n    \"<filterName>\": \"<value>\"\n  },\n  \"metric\": \"<metricName>\",\n  \"bucket\": [\n    {\n      \"field\": \"<aggregationKey>\"\n    }\n  ]\n}\n\n ```\n\n**Example:**\n\n``` json\n{\n  \"filter\": {\n    \"investorFeedId\": [\n      \"572cb232e4b0f2e791b91b0a\"\n    ]\n  },\n  \"metric\": \"count\",\n  \"bucket\": [\n    {\n      \"field\": \"investorCountry\"\n    }\n  ]\n}\n\n ```\n\n> **Note:** Only top 20 groups are returned for two-level aggregation. \n  \n\n---\n\n## Metric Name \\[Investors\\]\n\n| Metric Name | Description | Example Use Case |\n| --- | --- | --- |\n| count | Total count of entities matching given filters | Get the number of investors |\n\n---\n\n## Allowed Filters and Aggregation Keys for \\[Investors\\]\n\n### Sector Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| practiceAreaId | \\[\"Fintech\", \"Retail\"\\] | No |\n| feedId | \\[\"HRTech\", \"AI in Recruiting\"\\] | No |\n| businessModelHierarchy | \\[\"55a4afb7e4b0c3e220d405ce\"\\] | No |\n\n### Location Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| country | \\[\"United States\", \"Israel\"\\] | No |\n| countryAndCountryGroupId | \\[\"58075391e4b00a7b5be3ad99\"\\] | No |\n| continent | \\[\"Asia\", \"Europe\"\\] | No |\n| continentAndContinentGroupId | \\[\"5cb5bff887870743a49871c1\"\\] | No |\n| city | \\[\"San Francisco\", \"Boston\"\\] | No |\n| cityId | \\[\"63984bcd3f5d0e242497b55a\"\\] | No |\n\n### Funding Round Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| transactionFundingRoundCategory | \\[\"Series B\", \"Series C\"\\] | No |\n| transactionFundingRoundDate | {\"min\":\"01/01/2016\", \"max\":\"30/06/2016\"} | No |\n\n### Investor Filters\n\n| Filter | Sample | Aggregation Allowed |\n| --- | --- | --- |\n| investorFeedId | \\[\"572cb232e4b0f2e791b91b0a\"\\] | Yes |\n| investorCountry | \\[\"India\"\\] | Yes |\n| investorCountryAndCountryGroupId | \\[\"cDV7UsUlqFRLlwo1Jbzpwiv8lvqgVUWz4AJdMXJv14o\"\\] | Yes |\n| investorContinent | \\[\"Europe\", \"Asia\"\\] | Yes |\n| investorContinentAndContinentGroupId | \\[\"gwa3sXOBKAH7ULh7p-IUsREMjhpCh2-NTAqg5OUsozA\"\\] | Yes |\n| investorCity | \\[\"Mumbai\"\\] | Yes |\n| investorCityAndCityGroupId | \\[\"7y5XeWz9TTJnpHUSTrT4I9A0KWcYjTJ6t-KKoWCQ150\"\\] | Yes |\n\n---\n\n## Sample Request and Response\n\n### One-Level Aggregation\n\n**Sample Request for** **`count`** **with One-Level Aggregation:**\n\n``` json\n{\n  \"filter\": {\n    \"investorCountry\": [\n      \"India\"\n    ]\n  },\n  \"metric\": \"count\"\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": 69643\n}\n\n ```\n\n---\n\n### Two-Level Aggregation\n\n**Sample Request for** **`count`** **with Two-Level Aggregation (by** **`investorFeedId`****):**\n\n``` json\n{\n  \"filter\": {\n    \"investorFeedId\": [\n      \"572cb232e4b0f2e791b91b0a\"\n    ],\n    \"investorCountry\": [\n      \"India\"\n    ]\n  },\n  \"metric\": \"count\",\n  \"bucket\": [\n    {\n      \"field\": \"investorFeedId\"\n    }\n  ]\n}\n\n ```\n\n**Sample Response:**\n\n``` json\n{\n  \"result\": [\n    {\n      \"term\": \"572cb232e4b0f2e791b91b0a\",\n      \"value\": 1408\n    }\n  ]\n}\n\n ```\n\n---\n\n## Notes\n\n1. All filters apply using **AND** logic\n    \n2. Two-level aggregation returns **top 20 categories only**\n    \n3. Ensure a valid `accessToken` is passed in request header\n    \n4. Metric names are **case-sensitive**",
+   "variables": null,
+   "auth": null,
+   "events": null,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741265074,
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "folder": "7932e102-664d-4c90-8162-c17e105608d9",
+   "order": [
+    "ee66de9a-4c0e-4900-b2bb-21547155c170"
+   ],
+   "folders_order": [],
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:03:14.000Z"
+  }
+ ],
+ "requests": [
+  {
+   "id": "253eb0f4-4613-4f6a-b205-a0708c87d119",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"sort\": [\n        {\n            \"sortField\": \"announcementDate\",\n            \"order\": \"DEFAULT\"\n        }\n    ],\n    \"filter\": {\n        \"country\": [\n            \"India\"\n        ]\n    }\n}",
+   "descriptionFormat": null,
+   "description": "**Generate Playground Token**\n\nGo to: **Data Solutions > API & Developer Tools > Playground >** [Link](https://platform.tracxn.com/a/api/playground/apitoken)\n\nHere, you will find your **API token for the playground environment**.",
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/2.2/playground/acquisitiontransactions",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738769733,
+   "folder": "6a071de2-a060-48a1-a6b7-0300a65aba7b",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:20:08.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "3770add9-9577-411d-864c-44b5d3aeadd1",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"filter\": {\n        \"investorCountry\": [\n            \"India\"\n        ]\n    }\n}",
+   "descriptionFormat": null,
+   "description": "**Generate Playground Token**\n\nGo to: **Data Solutions > API & Developer Tools > Playground >** [Link](https://platform.tracxn.com/a/api/playground/apitoken)\n\nHere, you will find your **API token for the playground environment**.",
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/2.2/playground/investors",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738770515,
+   "folder": "55d9f7ad-3ec9-4508-bb44-398e467460e1",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:20:10.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "5641405e-a614-4ae9-8aa2-92b76e135d25",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"sort\": [\n        {\n            \"sortField\": \"transactionFundingRoundDate\",\n            \"order\": \"DEFAULT\"\n        }\n    ],\n    \"filter\": {\n        \"domain\": [\n            \"zomato.com\"\n        ]\n    }\n}",
+   "descriptionFormat": null,
+   "description": "**Generate Playground Token**\n\nGo to: **Data Solutions > API & Developer Tools > Playground >** [Link](https://platform.tracxn.com/a/api/playground/apitoken)\n\nHere, you will find your **API token for the playground environment**.",
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/2.2/playground/transactions",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738771348,
+   "folder": "47cad1c3-e562-4dd5-acb3-313f319ac9fe",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:20:13.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "648657b0-57d1-4927-92c7-2298eef54b23",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"sort\": [\n        {\n            \"sortField\": \"relevance\",\n            \"order\": \"DEFAULT\"\n        }\n    ],\n    \"filter\": {\n        \"country\": [\n            \"India\"\n        ]\n    }\n}",
+   "descriptionFormat": null,
+   "description": "**Generate Playground Token**\n\nGo to: **Data Solutions > API & Developer Tools > Playground >** [Link](https://platform.tracxn.com/a/api/playground/apitoken)\n\nHere, you will find your **API token for the playground environment**.",
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "accessToken: [accessToken as given by Tracxn]\n",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/2.2/playground/companies",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [
+    {
+     "key": "accessToken",
+     "value": "[accessToken as given by Tracxn]",
+     "type": "text"
+    }
+   ],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43739820875,
+   "folder": "5d82f36a-5684-4323-a7c6-1d77eb95dda2",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T11:00:12.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "9eb43f7e-3311-4b02-8ab4-9d7593c649da",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"filter\": {\n        \"practiceAreaId\": [\n            \"5409cb72e4b0efef66413044\"\n        ],\n        \"country\": [\n            \"India\"\n        ],\n        \"companyStage\": [\n            \"Funded\"\n        ]\n    },\n    \"metric\": \"count\",\n    \"bucket\": [\n        {\n            \"field\": \"feedId\"\n        }\n    ]\n}\n",
+   "descriptionFormat": null,
+   "description": null,
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/3.0/fundingrounds/metric",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741258147,
+   "folder": "665b4f8c-6814-40b9-8649-7dcf7cae2f63",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:02:49.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "adae7ffb-2335-430e-8d7e-4cdd27a7edd4",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n  \"filter\": {\n    \"companyName\": \"apple\"\n  }\n}",
+   "descriptionFormat": null,
+   "description": "**Generate Playground Token**\n\nGo to: **Data Solutions > API & Developer Tools > Playground >** [Link](https://platform.tracxn.com/a/api/playground/apitoken)\n\nHere, you will find your **API token for the playground environment**.",
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "accessToken: [accessToken as given by Tracxn]\n",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/2.2/playground/companies/search",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [
+    {
+     "key": "accessToken",
+     "value": "[accessToken as given by Tracxn]",
+     "type": "text"
+    }
+   ],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43738318709,
+   "folder": "221d89c9-9998-4af3-8bf6-7f05b1d54798",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T09:47:59.000Z",
+   "updatedAt": "2025-07-14T10:05:13.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "d9577b6d-40b9-4810-a777-7f19ad112d2a",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"filter\": {\n        \"practiceAreaId\": [\n            \"5409cb72e4b0efef66413044\"\n        ],\n        \"country\": [\n            \"India\"\n        ]\n    },\n    \"metric\": \"count\",\n    \"bucket\": [\n        {\n            \"field\": \"acquisitionType\"\n        }\n    ]\n}",
+   "descriptionFormat": null,
+   "description": null,
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/3.0/acquisitions/metric",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741274876,
+   "folder": "9bbce42f-2702-48fb-bfb8-2a827e2bf415",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:03:52.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "ee66de9a-4c0e-4900-b2bb-21547155c170",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"filter\": {\n        \"investorFeedId\": [\n            \"572cb232e4b0f2e791b91b0a\"\n        ],\n        \"investorCountry\": [\n            \"India\"\n        ]\n    },\n    \"metric\": \"count\",\n    \"bucket\": [\n        {\n            \"field\": \"investorFeedId\"\n        }\n    ]\n}",
+   "descriptionFormat": null,
+   "description": null,
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/3.0/investors/metric",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741267288,
+   "folder": "e6801599-efce-4630-bdf2-439badcac79f",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:03:22.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  },
+  {
+   "id": "f046b8b8-1928-4b52-938f-85269f46cedb",
+   "name": "Playground",
+   "dataMode": "raw",
+   "data": null,
+   "rawModeData": "{\n    \"filter\": {\n        \"practiceArea\": [\n            \"Artificial Intelligence\"\n        ]\n    },\n    \"metric\": \"count\",\n    \"bucket\": [\n        {\n            \"field\": \"companyStage\"\n        }\n    ]\n}",
+   "descriptionFormat": null,
+   "description": null,
+   "variables": null,
+   "events": null,
+   "auth": null,
+   "headers": "",
+   "method": "POST",
+   "pathVariables": {},
+   "url": "https://platform.tracxn.com/api/3.0/companies/metric",
+   "preRequestScript": null,
+   "tests": null,
+   "currentHelper": null,
+   "helperAttributes": null,
+   "queryParams": [],
+   "headerData": [],
+   "pathVariableData": [],
+   "protocolProfileBehavior": {
+    "disableBodyPruning": true
+   },
+   "dataDisabled": false,
+   "owner": "46732225",
+   "lastUpdatedBy": "46732225",
+   "lastRevision": 43741247660,
+   "folder": "caa5ad81-ecc3-4ddd-82a1-82a6cab2bd3f",
+   "collection": "660d0563-a2c6-4dd3-ae0e-9849459a5832",
+   "createdAt": "2025-07-14T11:57:35.000Z",
+   "updatedAt": "2025-07-14T12:02:18.000Z",
+   "responses_order": [],
+   "dataOptions": {
+    "raw": {
+     "language": "json"
+    }
+   },
+   "responses": []
+  }
+ ]
+}

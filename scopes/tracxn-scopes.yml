@@ -1,0 +1,63 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  https://platform.tracxn.com/.well-known/oauth-authorization-server/mcp (HTTP 200,
+  fetched 2026-08-14, saved verbatim at
+  well-known/tracxn-oauth-authorization-server-mcp.json) ;
+  https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp (HTTP 200, saved at
+  well-known/tracxn-oauth-protected-resource-mcp.json) ;
+  RFC 9728 challenge returned by https://platform.tracxn.com/mcp
+docs: https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp
+description: >-
+  Tracxn's only OAuth surface is the MCP server; the REST API is API-key authenticated and has
+  no scope model at all. The MCP authorization server advertises exactly ONE scope — `read` —
+  in both its authorization-server metadata and its protected-resource metadata. There is no
+  write scope because there is no write surface: every MCP tool and every REST endpoint is a
+  query. Authorization is therefore coarse-grained by design; what a token can actually reach
+  is governed by the customer's Tracxn subscription entitlements and credit balance, not by
+  the scope string.
+authorization_server:
+  issuer: https://platform.tracxn.com/mcp
+  authorization_endpoint: https://platform.tracxn.com/auth/2.0/mcp/authorize
+  token_endpoint: https://platform.tracxn.com/auth/2.0/mcp/token
+  registration_endpoint: https://platform.tracxn.com/auth/2.0/mcp/register
+  grant_types_supported: [authorization_code]
+  response_types_supported: [code]
+  response_modes_supported: [query]
+  code_challenge_methods_supported: [S256]
+  token_endpoint_auth_methods_supported: [none]
+  authorization_response_iss_parameter_supported: true
+protected_resource:
+  resource: https://platform.tracxn.com/mcp
+  authorization_servers:
+    - https://platform.tracxn.com/mcp
+scopes:
+  - name: read
+    description: >-
+      Read access to the Tracxn private-market dataset through the MCP server — companies,
+      legal entities, funding rounds, acquisitions, investors, IPOs, time series, locations
+      and sectors. Advertised in scopes_supported by both the authorization-server and
+      protected-resource metadata. The sole scope Tracxn defines.
+    surface: mcp
+    grants: All 11 published MCP tools (see mcp/tracxn-mcp.yml)
+    write: false
+scope_count: 1
+notes:
+  - >-
+    token_endpoint_auth_methods_supported is ["none"], i.e. public clients — correct for
+    desktop/CLI MCP clients that cannot hold a secret, and consistent with the mandatory PKCE
+    S256 requirement.
+  - >-
+    Dynamic client registration is open at /auth/2.0/mcp/register, which is why a generic MCP
+    client can connect with nothing but the server URL.
+  - >-
+    The issuer and the resource are the same URL (https://platform.tracxn.com/mcp) — the MCP
+    server is its own authorization server rather than delegating to a separate platform IdP.
+  - >-
+    Entitlement, not scope, is the real access boundary: Tracxn's troubleshooting guide tells
+    users that tools may appear but return errors when "your subscription covers the data
+    you're querying (e.g. financials may require a higher tier)". A `read` token does not
+    imply access to every dataset.
+  - >-
+    The REST API (accessToken header) has NO scopes and is not represented here. See
+    authentication/tracxn-authentication.yml.

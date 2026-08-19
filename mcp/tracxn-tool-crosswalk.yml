@@ -1,0 +1,190 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  Derived by aligning the 11 published MCP tools
+  (https://help.tracxn.com/en/articles/15131870-available-data-tools-with-tracxn-mcp,
+  captured in mcp/tracxn-mcp.yml) with the REST surface published in Tracxn's official
+  public Postman workspace (https://www.postman.com/tracxnapi/tracxn-api), saved verbatim
+  at postman/tracxn-api-production.postman.json — 42 requests over 35 distinct endpoint
+  URLs across API v2.2 and v3.0.
+purpose: >-
+  Make the MCP tool the first-class discovery unit and bind it to the REST endpoint that
+  backs it. Tracxn is a two-surface provider — REST and MCP — projecting one private-market
+  data core. The surfaces are close but NOT identical: MCP adds an entity-resolution tool
+  and a prompt-loading tool that have no REST equivalent, while REST exposes taxonomy,
+  aggregation and saved-list endpoints that no MCP tool reaches.
+surfaces:
+  rest:
+    contract: postman/tracxn-api-production.postman.json
+    kind: postman-collection
+    openapi: null
+    openapi_note: >-
+      Tracxn publishes NO OpenAPI. The binding target below is therefore an endpoint PATH,
+      not an operationId — there are no operationIds to bind to. No OpenAPI was synthesised
+      from the collection: doing so would credit Tracxn with a spec it does not publish.
+    base_production: https://platform.tracxn.com/api/3.0
+    base_legacy: https://platform.tracxn.com/api/2.2
+    base_playground: https://platform.tracxn.com/api/2.2/playground
+    auth: accessToken request header (see authentication/tracxn-authentication.yml)
+    gated: false
+    gated_note: >-
+      The collection is public and readable anonymously; only CALLING the endpoints requires
+      a token. Full reference docs (Output Keys, Sorts applicable) sit behind the platform login.
+  mcp:
+    url: https://platform.tracxn.com/mcp
+    auth: oauth
+    gated: true
+    gated_note: >-
+      tools/list requires an authenticated session, so tool inputSchemas are not readable.
+      Tool names and descriptions below come from Tracxn's published documentation.
+  graphql: null
+
+# Each MCP tool -> the REST endpoint(s) that back it. Because the MCP input schemas are
+# gated, bindings are matched on name + published description + entity semantics; the
+# confidence column states that honestly rather than implying a verified wire-level mapping.
+crosswalk:
+  - tool: search_companies
+    category: search
+    rest:
+      - POST /api/3.0/companies
+      - POST /api/2.2/companies
+      - POST /api/2.2/companies/search
+    binding: rest
+    confidence: high
+    note: >-
+      "Search and fetch detailed company information by name or domain" maps onto the
+      Companies endpoint, whose filter body is the same name/domain criteria. v2.2
+      additionally splits a dedicated /companies/search name lookup.
+  - tool: search_funding_rounds
+    category: search
+    rest:
+      - POST /api/3.0/fundingrounds
+      - POST /api/2.2/transactions
+    binding: rest
+    confidence: high
+    note: The v2.2 entity was "transactions"; v3.0 renamed it "fundingrounds".
+  - tool: search_acquisitions
+    category: search
+    rest:
+      - POST /api/3.0/acquisitions
+      - POST /api/2.2/acquisitiontransactions
+    binding: rest
+    confidence: high
+  - tool: search_investors
+    category: search
+    rest:
+      - POST /api/2.2/investors
+    binding: rest
+    confidence: high
+    note: >-
+      No v3.0 investor SEARCH endpoint appears in the production collection — only
+      /api/3.0/investors/metric (aggregation). Investor search is still v2.2-only on REST
+      while the MCP tool exposes it regardless of version. Worth raising with Tracxn given
+      the announced v2.2 deprecation.
+  - tool: search_ipo_events
+    category: search
+    rest:
+      - POST /api/3.0/ipos
+    binding: rest
+    confidence: high
+    note: MCP-reachable and v3.0-only; there is no v2.2 IPO endpoint.
+  - tool: search_time_series
+    category: timeseries
+    rest:
+      - POST /api/3.0/timeseries/revenue
+      - POST /api/3.0/timeseries/netprofit
+      - POST /api/3.0/timeseries/ebitda
+      - POST /api/3.0/timeseries/valuation
+      - POST /api/3.0/timeseries/balancesheetassets
+      - POST /api/3.0/timeseries/balancesheetequity
+      - POST /api/3.0/timeseries/balancesheetliability
+      - POST /api/3.0/timeseries/cashflowoperatingactivity
+      - POST /api/3.0/timeseries/cashflowinvestingactivity
+      - POST /api/3.0/timeseries/employeecountlabourfilings
+      - POST /api/3.0/timeseries/employeecountannualreport
+    binding: rest
+    confidence: medium
+    note: >-
+      One MCP tool ("historical data — financials and employee growth") fans out to eleven
+      REST endpoints, one per metric. Which metric a call resolves to is server-side, so the
+      mapping is one-to-many and cannot be pinned per-invocation without the input schema.
+  - tool: search_sectors
+    category: taxonomy
+    rest:
+      - POST /api/3.0/feeds
+      - POST /api/3.0/practiceareas
+      - POST /api/2.2/feeds
+      - POST /api/2.2/practiceareas
+    binding: rest
+    confidence: medium
+    note: >-
+      Tracxn's sector taxonomy is two-level — Practice Area above Feed — and the single MCP
+      tool spans both. Note Tracxn states the taxonomy ITSELF is proprietary and is not
+      exposed as data; these endpoints filter by it rather than export it.
+  - tool: search_legal_entities
+    category: search
+    rest: []
+    binding: none
+    confidence: low
+    note: >-
+      Legal entities are a documented platform database with a full help-centre section, and
+      the MCP exposes a dedicated tool for them, but NO legal-entity endpoint appears in the
+      public production collection. Either the REST endpoint is undocumented publicly or the
+      tool composes company endpoints server-side. Recorded as unbound rather than guessed.
+  - tool: search_locations
+    category: filter
+    rest: []
+    binding: parameter
+    confidence: medium
+    note: >-
+      No /locations endpoint exists. On REST, geography is a FILTER field (e.g. "country":
+      ["India"] in the published request bodies), not a resource. The MCP promotes a filter
+      to a first-class tool — a genuine surface divergence, not a missing endpoint.
+
+mcp_only:
+  - tool: load_prompts
+    reason: >-
+      Loads Tracxn's own instructions and prompt templates into the client's context. This is
+      an MCP-protocol affordance (prompt distribution) with no REST analogue and no data
+      payload; it is also the one tool that shapes how every other tool gets used.
+  - tool: resolve_entities
+    reason: >-
+      Resolves a company website/domain to Tracxn's internal entity ID. No public REST
+      endpoint performs domain->ID resolution as a distinct operation; on REST a caller
+      filters /companies by domain and reads the id off the result. Exposing resolution as a
+      dedicated tool is the single most agent-relevant addition in the MCP surface, because
+      every other tool is keyed on that internal ID.
+
+rest_only:
+  - rest: POST /api/3.0/companies/metric
+    reason: Aggregation/roll-up (counts and buckets over a filter) — no MCP tool returns aggregates.
+  - rest: POST /api/3.0/fundingrounds/metric
+    reason: Aggregation over funding rounds.
+  - rest: POST /api/3.0/investors/metric
+    reason: Aggregation over investors.
+  - rest: POST /api/3.0/acquisitions/metric
+    reason: Aggregation over acquisitions.
+  - rest: POST /api/2.2/bookmarkslist
+    reason: >-
+      Custom/bookmark list retrieval — a per-user platform workspace object rather than
+      market data. No MCP tool reaches saved lists, sourcing boards or saved searches.
+  - rest: POST /api/2.2/companies/timeseries/ebidta
+    reason: >-
+      Legacy v2.2 time-series variant (note the provider's "ebidta" spelling, corrected to
+      "ebitda" in v3.0). Superseded rather than genuinely REST-only.
+
+coverage:
+  mcp_tools: 11
+  mcp_tools_bound_to_rest: 7
+  mcp_tools_unbound: 4          # load_prompts, resolve_entities, search_legal_entities, search_locations
+  rest_endpoints_distinct: 35
+  rest_endpoints_reachable_via_mcp: 22
+  rest_endpoints_mcp_unreachable: 6
+  input_schemas_available: false
+divergence_summary: >-
+  Neither surface is a superset. MCP wins on entity resolution and prompt guidance and
+  flattens the v2.2/v3.0 version split away from the caller entirely; REST wins on
+  aggregation (the four /metric endpoints), on saved lists, and on addressing a specific
+  financial metric directly instead of through one catch-all time-series tool. An agent
+  restricted to MCP cannot compute a market count without paying credits to enumerate
+  results, which is the most consequential gap in the crosswalk.

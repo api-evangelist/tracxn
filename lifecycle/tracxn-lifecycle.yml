@@ -1,29 +1,124 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
 source: >-
-  https://w.tracxn.com/api-developers-page ; official Postman workspace
-  https://www.postman.com/tracxnapi/tracxn-api (API Version 2.2) ;
-  https://tracxn.com/termsofuse
+  "API Update Notice" (production) and "Deprecation Notice" (playground) sections of the Tracxn
+  API Guide, published in the official public Postman workspace
+  (https://www.postman.com/tracxnapi/tracxn-api), saved at
+  postman/tracxn-api-production.postman.json and postman/tracxn-api-playground.postman.json ;
+  https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis ;
+  https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis ;
+  https://tracxn.com/termsofuse ; probes of status.tracxn.com, tracxn.com/roadmap and
+  tracxn.com/changelog (2026-08-14)
 description: >-
-  Lifecycle posture of the Tracxn API. The API is versioned in the URI path
-  (current major.minor 2.2, with the official Postman workspace organized
-  around "API Version 2.2"); earlier versions are not publicly documented.
-  Tracxn publishes no public deprecation policy, no RFC 8594
-  Sunset/Deprecation header contract, no public SLA and no public status
-  page at this pass — absence recorded as honest data. API support runs
-  through apidesk@tracxn.com.
+  Tracxn is mid-migration between two API majors and says so in writing. Version 3.0 is current
+  and version 2.2 is formally announced as being phased out — "API Version 2.2 will be deprecated
+  soon. Please migrate to Version 3.0 to ensure continued support and access to new features."
+  That is a real, published deprecation statement, which is why a Deprecation pointer is emitted.
+  What is NOT published is any of the machinery around it: no sunset DATE, no RFC 8594
+  Sunset/Deprecation response headers, no dated changelog, no status page and no public SLA. An
+  integrator is told to migrate but is given no deadline and no runtime signal, so the deprecation
+  is discoverable only by re-reading the guide.
 versioning:
   api:
     scheme: uri-path
-    current: '2.2'
-    example: https://platform.tracxn.com/api/2.2/companies
+    current: '3.0'
+    current_base: https://platform.tracxn.com/api/3.0
+    previous: '2.2'
+    previous_base: https://platform.tracxn.com/api/2.2
+    example: https://platform.tracxn.com/api/3.0/companies
+    note: >-
+      Both majors are live and both are documented side by side in the public Postman workspace.
+      The v3.0 surface is broader (IPOs, expanded balance-sheet and cash-flow time series,
+      dedicated fundingrounds/acquisitions resources, /metric aggregation endpoints); v2.2 still
+      uniquely carries investor SEARCH and the bookmarks/custom-list endpoint.
 deprecation:
-  policy_url: null
-  sunset_header: unknown
-  note: No public deprecation policy or Sunset/Deprecation header support documented.
+  policy_url: https://www.postman.com/tracxnapi/tracxn-api
+  policy_published: true
+  statement: >-
+    "We're phasing out API Version 2.2 as we transition to Version 3.0. For details and support
+    with migration, reach out to apidesk@tracxn.com." (Production guide) /
+    "API Version 2.2 will be deprecated soon. Please migrate to Version 3.0 to ensure continued
+    support and access to new features." (Playground guide)
+  deprecated_version: '2.2'
+  replacement_version: '3.0'
+  sunset_date: null
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  migration_contact: apidesk@tracxn.com
+  migration_guide_url: null
+  gaps:
+    - No sunset or end-of-life date is stated — "soon" is the only timeline given.
+    - No RFC 8594 Sunset/Deprecation headers are returned, so a running client gets no warning.
+    - No published field-level migration map from 2.2 to 3.0 (e.g. transactions -> fundingrounds).
+    - >-
+      Investor search has no v3.0 equivalent in the public collection (only /investors/metric),
+      so a caller cannot fully migrate off 2.2 today.
+renames_observed:
+  - from: POST /api/2.2/transactions
+    to: POST /api/3.0/fundingrounds
+  - from: POST /api/2.2/acquisitiontransactions
+    to: POST /api/3.0/acquisitions
+  - from: POST /api/2.2/companies/timeseries/ebidta
+    to: POST /api/3.0/timeseries/ebitda
+    note: The v2.2 path carries a misspelling ("ebidta") that is corrected in v3.0.
+  - from: POST /api/2.2/companies/timeseries/employeecount
+    to: POST /api/3.0/timeseries/employeecountlabourfilings and /employeecountannualreport
+    note: One v2.2 endpoint splits into two v3.0 endpoints by source of record.
+change_log:
+  published: false
+  url: null
+  note: >-
+    No dated changelog or release-notes feed exists for the API. Version news is embedded in the
+    Postman guide prose and in help-centre articles carrying an ad-hoc "Last updated" line (the
+    Tracxn MCP FAQ, for example, reads "Last updated: 11 May 2026"). No ChangeLog pointer is
+    emitted because there is no dated entry series to point at.
+status_page:
+  url: null
+  published: false
+  probed:
+    - url: https://status.tracxn.com
+      status: 000
+      note: Host does not resolve.
+  note: No status or uptime page exists on any Tracxn domain. No StatusPage pointer is emitted.
 sla:
   url: null
   uptime_target: null
-status_page: null
-support: apidesk@tracxn.com
+  published: false
+roadmap:
+  url: null
+  published: false
+  probed:
+    - url: https://tracxn.com/roadmap
+      status: 404
+  public_commitments:
+    - item: Webhooks / server-side push
+      status: on-roadmap
+      statement: >-
+        "Currently, Tracxn does not support server-side push or webhooks. However, this feature is
+        part of our product roadmap, and updates will be shared once it becomes available."
+      source: https://help.tracxn.com/en/articles/11142764-miscellaneous-faqs-on-tracxn-apis
+    - item: MCP API-token authentication (for in-house AI platforms / Copilot Studio)
+      status: coming-soon
+      source: https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp
+    - item: Zoho CRM native integration
+      status: coming-soon
+      source: https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis
+  note: >-
+    These are dated-nowhere prose commitments scattered across help articles, not a roadmap page.
+    No Roadmap pointer is emitted.
+data_lifecycle:
+  freshness_field: >-
+    The Companies API returns `lastUpdatedDate`, the date the company profile was last refreshed —
+    the one first-class staleness signal in the contract.
+  update_cadence: >-
+    Most data is published as soon as public sources change; financials, cap tables and employee
+    counts follow annual official sources (MCA filings, labour reports).
+  data_deletion_obligation: >-
+    Deleting Tracxn data at the end of the subscription period is a mandatory compliance
+    requirement under the Master Services Agreement.
+support:
+  api_desk: apidesk@tracxn.com
+  support: support@tracxn.com
+  help_center: https://help.tracxn.com/en/
 terms: https://tracxn.com/termsofuse

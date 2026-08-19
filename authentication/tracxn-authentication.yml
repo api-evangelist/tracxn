@@ -1,38 +1,124 @@
-generated: '2026-07-21'
+generated: '2026-08-14'
 method: searched
 source: >-
-  https://w.tracxn.com/api-developers-page ; live probe of
-  https://platform.tracxn.com/api/2.2/companies (403 without token) ;
-  https://www.postman.com/tracxnapi/tracxn-api (official Postman workspace) ;
-  public client implementations of the documented v2.2 contract
+  Tracxn API Guide published in the official public Postman workspace
+  (https://www.postman.com/tracxnapi/tracxn-api), saved at
+  postman/tracxn-api-production.postman.json — request headers and the "Generating API
+  Tokens" section ;
+  https://help.tracxn.com/en/articles/8512359-getting-started-with-tracxn-apis ;
+  https://help.tracxn.com/en/articles/14686877-what-is-tracxn-mcp ;
+  live probes 2026-08-14 of https://platform.tracxn.com/api/2.2/companies (403 without token)
+  and https://platform.tracxn.com/mcp (401 + RFC 9728 challenge) ;
+  https://platform.tracxn.com/.well-known/oauth-authorization-server/mcp (HTTP 200)
 docs: https://platform.tracxn.com/a/api/gettingstarted/apibasics
 description: >-
-  Authentication profile for the Tracxn API v2.2. Tracxn does not publish a
-  public OpenAPI; the reference documentation sits behind the platform login.
-  The API authenticates every request with an account-scoped access token
-  passed in a lowercase `accesstoken` HTTP header. Tokens are issued from the
-  Tracxn platform under Data Solutions > API & Developer Tools (separate
-  Playground and production tokens). Requests without a token are rejected
-  with a JSON error envelope (errorCode 403000000, "Invalid web session
-  access. No user." observed live on 2026-07-21). No OAuth 2.0, OpenID
-  Connect, or scope surface is documented.
+  Tracxn runs TWO independent authentication models, one per surface, and they share no
+  credential. The REST API takes a long-lived, account-scoped API token in an `accessToken`
+  request header — no OAuth, no scopes, no expiry for active accounts. The MCP server takes
+  OAuth 2.1 with PKCE and dynamic client registration, browser-based, with a single `read`
+  scope. Tokens are additionally ENVIRONMENT-specific on REST: the Playground token and the
+  Production token are separate credentials issued from separate pages and Tracxn explicitly
+  warns against reusing one for the other.
 summary:
   types:
-  - apiKey
+    - apiKey
+    - oauth2
   api_key_in:
-  - header
-  oauth2_flows: []
+    - header
+  oauth2_flows:
+    - authorization_code
+  scopes_defined: 1
 schemes:
-- name: accesstoken
-  type: apiKey
-  in: header
-  parameter: accesstoken
-  issuance: Tracxn platform > Data Solutions > API & Developer Tools > API Token
-  environments:
-  - production: https://platform.tracxn.com/api/2.2
-  - playground: https://platform.tracxn.com/api/2.2/playground
+  - name: accessToken
+    surface: rest
+    type: apiKey
+    in: header
+    parameter: accessToken
+    parameter_note: >-
+      Published in the Postman collection as `accessToken` (camelCase) and observed working as
+      `accesstoken` (lowercase) — HTTP header names are case-insensitive, so both are correct.
+      Documentation is inconsistent between the two; either is safe to send.
+    value_format: Opaque account-scoped token issued by Tracxn
+    issuance: >-
+      Tracxn platform > Data Solutions > API & Developer Tools > (Production Environment |
+      Playground) > API Token > "Generate a new token"
+    issuance_url: https://platform.tracxn.com/a/api/apitoken
+    scopes: none
+    environments:
+      - environment: production
+        base_url: https://platform.tracxn.com/api/3.0
+        legacy_base_url: https://platform.tracxn.com/api/2.2
+        token_page: https://platform.tracxn.com/a/api/productionenvironment/apitoken
+      - environment: playground
+        base_url: https://platform.tracxn.com/api/2.2/playground
+        token_page: https://platform.tracxn.com/a/api/playground/about
+        note: Separate token; commercial use prohibited. See sandbox/tracxn-sandbox.yml.
+    token_isolation: >-
+      Tokens are environment-specific. Tracxn's guide states: "Do not reuse between Playground
+      and Production."
+    expiry:
+      active_accounts: >-
+        Tokens are generally configured NOT to expire for active accounts.
+      trial_accounts: Automatically revoked when the trial period ends.
+      notice: An alert notification is sent 30 days before an API access token expires.
+      rotation: Self-serve — generate a new token from the API Token page at any time.
+  - name: mcp-oauth
+    surface: mcp
+    type: oauth2
+    flow: authorization_code
+    pkce: S256
+    pkce_required: true
+    dynamic_client_registration: true
+    client_type: public
+    token_endpoint_auth_methods_supported: [none]
+    issuer: https://platform.tracxn.com/mcp
+    authorization_endpoint: https://platform.tracxn.com/auth/2.0/mcp/authorize
+    token_endpoint: https://platform.tracxn.com/auth/2.0/mcp/token
+    registration_endpoint: https://platform.tracxn.com/auth/2.0/mcp/register
+    scopes: [read]
+    detail: scopes/tracxn-scopes.yml
+    metadata:
+      protected_resource: well-known/tracxn-oauth-protected-resource-mcp.json
+      authorization_server: well-known/tracxn-oauth-authorization-server-mcp.json
+    user_experience: >-
+      Browser-based login on first connect. Tracxn never sees the AI client's credentials and
+      the AI client never sees the user's Tracxn password. The user revokes by disconnecting
+      the integration in their AI client.
+    api_token_alternative:
+      status: coming-soon
+      note: >-
+        Tracxn documents a forthcoming MCP API-token method for in-house AI platforms and
+        Microsoft Copilot Studio. Not available at this pass — OAuth is the only working method.
+entitlement_note: >-
+  Authentication is not authorization here. A valid credential on either surface still resolves
+  against the customer's subscription entitlements and credit balance: Tracxn's own
+  troubleshooting guidance covers tools that authenticate fine but return errors because "your
+  subscription covers the data you're querying (e.g. financials may require a higher tier)",
+  and a fully-authenticated REST call fails with 403 / code 900 once credits are exhausted.
 unauthenticated_response:
-  status: 403
-  body:
-    errorCode: 403000000
-    message: Invalid web session access. No user.
+  rest:
+    status: 403
+    body:
+      errorCode: 403000000
+      message: Invalid web session access. No user.
+    observed: live probe 2026-08-14 (unchanged from 2026-07-21)
+    note: >-
+      The same envelope is returned for ANY unmatched path under /api/ — it is a catch-all, so
+      a 403 here does not prove an endpoint exists.
+  mcp:
+    status: 401
+    www_authenticate: >-
+      Bearer realm="mcp",
+      resource_metadata="https://platform.tracxn.com/.well-known/oauth-protected-resource/mcp"
+    body:
+      error: Unauthorized
+      message: Authorization required
+    observed: live probe 2026-08-14
+    note: Spec-compliant RFC 9728 challenge — this is what makes the server discoverable to a generic MCP client.
+documented_status_codes:
+  401: Authentication Issue — Token missing or invalid
+  403: Unauthorized — Token expired or access denied
+  detail: errors/tracxn-problem-types.yml
+transport_security:
+  https_only: true
+  detail: security/tracxn-domain-security.yml
