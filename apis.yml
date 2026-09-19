@@ -55,6 +55,16 @@ tags:
 - Venture Capital
 - Startups
 - Company Data
+- Investor
+- Funding
+tags_raw:
+- Company
+- Cloud Saas
+- Market Intelligence
+- Private Markets
+- Venture Capital
+- Startups
+- Company Data
 - Investors
 - Funding
 apis:
@@ -77,6 +87,13 @@ apis:
   humanURL: https://w.tracxn.com/api-developers-page
   baseURL: https://platform.tracxn.com/api/3.0
   tags:
+  - Companies
+  - Investor
+  - Funding Rounds
+  - Acquisition
+  - IPOs
+  - Market Intelligence
+  tags_raw:
   - Companies
   - Investors
   - Funding Rounds
